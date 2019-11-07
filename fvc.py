@@ -14,10 +14,10 @@ window = Tk()
 window.title('Forensic Version Checker')
 
 if os.name == 'nt':
-	window.geometry('345x360')
+	window.geometry('345x440')
 	fontsize = 9
 else:
-	window.geometry('315x325')
+	window.geometry('315x400')
 	fontsize = 10
 
 
@@ -37,6 +37,10 @@ xamn =
 xways = 
 cyberchef = 
 nsrl = 
+aim = 
+passware = 
+hashcat = 
+exiftool = 
 """
 
 	configfile = open('current_versions.ini', 'w')
@@ -66,15 +70,22 @@ def latest_update():
             'https://www.x-ways.net/forensics/index-m.html',
             'https://github.com/gchq/CyberChef/blob/master/CHANGELOG.md',
             'https://www.nist.gov/itl/ssd/software-quality-group/nsrl-download/current-rds-hash-sets',
-            'https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'
+            'https://github.com/jankais3r/Forensic-Version-Checker/releases/latest',
+			'https://arsenalrecon.com/downloads/',
+			'https://blog.passware.com/category/product-update/',
+			'https://hashcat.net/beta/',
+			'https://owl.phy.queensu.ca/~phil/exiftool/history.html'
         ]
-	response = grequests.map((grequests.get(u) for u in urls), size=5)
+	response = grequests.map((grequests.get(u) for u in urls), size=3)
 	
 	### EnCase
 	soup = BeautifulSoup(response[0].text, 'html.parser')
-	version = soup.select_one('h3').text.strip()
-	version = version.replace('EnCase Forensic ','')
-	version = version.split(':')[0]
+	try:
+		version = soup.select_one('h3').text.strip()
+		version = version.replace('EnCase Forensic ','')
+		version = version.split(':')[0]
+	except:
+		version = 'Error'
 	encase_latest.configure(state='normal')
 	encase_latest.delete(0, END)
 	encase_latest.insert(0,version)
@@ -88,8 +99,11 @@ def latest_update():
 	
 	### BlackLight
 	soup = BeautifulSoup(response[1].text, 'html.parser')
-	version = soup.find('dl', {'id': 'blacklightrevision'}).select_one('span').text.strip()
-	version = version.replace('BlackLight ','')
+	try:
+		version = soup.find('dl', {'id': 'blacklightrevision'}).select_one('span').text.strip()
+		version = version.replace('BlackLight ','')
+	except:
+		version = 'Error'
 	blacklight_latest.configure(state='normal')
 	blacklight_latest.delete(0, END)
 	blacklight_latest.insert(0,version)
@@ -103,8 +117,11 @@ def latest_update():
 	
 	### AXIOM
 	soup = BeautifulSoup(response[2].text, 'html.parser')
-	version = soup.select_one('h2').text.strip()
-	version = version.replace('MAGNET AXIOM ','')
+	try:
+		version = soup.select_one('h2').text.strip()
+		version = version.replace('MAGNET AXIOM ','')
+	except:
+		version = 'Error'
 	axiom_latest.configure(state='normal')
 	axiom_latest.delete(0, END)
 	axiom_latest.insert(0,version)
@@ -118,8 +135,11 @@ def latest_update():
 	
 	## UFED4PC
 	soup = BeautifulSoup(response[3].text, 'html.parser')
-	version = soup.find(text=re.compile('UFED 4PC')).parent.select_one('b').text.strip()
-	version = version.replace('Version ','')
+	try:
+		version = soup.find(text=re.compile('UFED 4PC')).parent.select_one('b').text.strip()
+		version = version.replace('Version ','')
+	except:
+		version = 'Error'
 	ufed4pc_latest.configure(state='normal')
 	ufed4pc_latest.delete(0, END)
 	ufed4pc_latest.insert(0,version)
@@ -133,8 +153,11 @@ def latest_update():
 	
 	#Physical Analyzer
 	soup = BeautifulSoup(response[3].text, 'html.parser')
-	version = soup.find(text=re.compile('Physical|Logical Analyzer')).parent.select_one('b').text.strip()
-	version = version.replace('Version ','')
+	try:
+		version = soup.find(text=re.compile('Physical|Logical Analyzer')).parent.select_one('b').text.strip()
+		version = version.replace('Version ','')
+	except:
+		version = 'Error'
 	physicalanalyzer_latest.configure(state='normal')
 	physicalanalyzer_latest.delete(0, END)
 	physicalanalyzer_latest.insert(0,version)
@@ -148,10 +171,13 @@ def latest_update():
 	
 	### OSF
 	soup = BeautifulSoup(response[4].text, 'html.parser')
-	version = soup.select_one('h4').text.strip()
-	version = version.replace(' build ','.')
-	version = version.split(' ')[0]
-	version = version[1:]
+	try:
+		version = soup.select_one('h4').text.strip()
+		version = version.replace(' build ','.')
+		version = version.split(' ')[0]
+		version = version[1:]
+	except:
+		version = 'Error'
 	osf_latest.configure(state='normal')
 	osf_latest.delete(0, END)
 	osf_latest.insert(0,version)
@@ -165,9 +191,12 @@ def latest_update():
 	
 	### ForensicExplorer
 	soup = BeautifulSoup(response[5].text, 'html.parser')
-	version = soup.select_one('a[href$=".exe"]')['href']
-	version = version[version.index('(v'):]
-	version = version[2:-5]
+	try:
+		version = soup.select_one('a[href$=".exe"]')['href']
+		version = version[version.index('(v'):]
+		version = version[2:-5]
+	except:
+		version = 'Error'
 	forensicexplorer_latest.configure(state='normal')
 	forensicexplorer_latest.delete(0, END)
 	forensicexplorer_latest.insert(0,version)
@@ -181,9 +210,12 @@ def latest_update():
 	
 	### USB Detective
 	soup = BeautifulSoup(response[6].text, 'html.parser')
-	version = soup.select_one('h2').text.strip()
-	version = version.replace('Version ','')
-	version = version.split(' ')[0]
+	try:
+		version = soup.select_one('h2').text.strip()
+		version = version.replace('Version ','')
+		version = version.split(' ')[0]
+	except:
+		version = 'Error'
 	usbdetective_latest.configure(state='normal')
 	usbdetective_latest.delete(0, END)
 	usbdetective_latest.insert(0,version)
@@ -197,8 +229,11 @@ def latest_update():
 	
 	### FTK
 	soup = BeautifulSoup(response[7].text, 'html.parser')
-	version = soup.select_one('a[href^="http://accessdata.com/product-download/forensic-toolkit-ftk-version"]').parent.parent.select_one('h5').text.strip()
-	version = version.replace('Forensic Toolkit (FTK) version ','')
+	try:
+		version = soup.select_one('a[href^="http://accessdata.com/product-download/forensic-toolkit-ftk-version"]').parent.parent.select_one('h5').text.strip()
+		version = version.replace('Forensic Toolkit (FTK) version ','')
+	except:
+		version = 'Error'
 	ftk_latest.configure(state='normal')
 	ftk_latest.delete(0, END)
 	ftk_latest.insert(0,version)
@@ -212,8 +247,11 @@ def latest_update():
 	
 	### FTK Imager
 	soup = BeautifulSoup(response[7].text, 'html.parser')
-	version = soup.select_one('a[href^="http://accessdata.com/product-download/ftk-imager-version"]').parent.parent.select_one('h5').text.strip()
-	version = version.replace('FTK Imager version ','')
+	try:
+		version = soup.select_one('a[href^="http://accessdata.com/product-download/ftk-imager-version"]').parent.parent.select_one('h5').text.strip()
+		version = version.replace('FTK Imager version ','')
+	except:
+		version = 'Error'
 	ftkimager_latest.configure(state='normal')
 	ftkimager_latest.delete(0, END)
 	ftkimager_latest.insert(0,version)
@@ -227,8 +265,11 @@ def latest_update():
 	
 	### XAMN
 	soup = BeautifulSoup(response[8].text, 'html.parser')
-	version = soup.select_one('a[href^="https://www.msab.com/download/msab_software/XAMN"]').text.strip()
-	version = version.replace('XAMN Viewer v','')
+	try:
+		version = soup.select_one('a[href^="https://www.msab.com/download/msab_software/XAMN"]').text.strip()
+		version = version.replace('XAMN Viewer v','')
+	except:
+		version = 'Error'
 	xamn_latest.configure(state='normal')
 	xamn_latest.delete(0, END)
 	xamn_latest.insert(0,version)
@@ -242,8 +283,11 @@ def latest_update():
 	
 	### X-Ways
 	soup = BeautifulSoup(response[9].text, 'html.parser')
-	version = soup.find('div', {'class': 'content'}).select_one('b').text.strip()
-	version = version[19:].strip()
+	try:
+		version = soup.find('div', {'class': 'content'}).select_one('b').text.strip()
+		version = version[19:].strip()
+	except:
+		version = 'Error'
 	xways_latest.configure(state='normal')
 	xways_latest.delete(0, END)
 	xways_latest.insert(0,version)
@@ -257,7 +301,10 @@ def latest_update():
 	
 	### CyberChef
 	soup = BeautifulSoup(response[10].text, 'html.parser')
-	version = soup.select_one('a[href^="https://github.com/gchq/CyberChef/releases/"]').text.strip()
+	try:
+		version = soup.select_one('a[href^="https://github.com/gchq/CyberChef/releases/"]').text.strip()
+	except:
+		version = 'Error'
 	cyberchef_latest.configure(state='normal')
 	cyberchef_latest.delete(0, END)
 	cyberchef_latest.insert(0,version)
@@ -271,10 +318,13 @@ def latest_update():
 	
 	### NSRL
 	soup = BeautifulSoup(response[11].text, 'html.parser')
-	version = soup.find('div', {'class': 'tex2jax'}).select_one('h2').text.strip()
-	version = version.replace('RDS Version ','')
-	version = version.split('-')[0]
-	version = version[:-1]
+	try:
+		version = soup.find('div', {'class': 'tex2jax'}).select_one('h2').text.strip()
+		version = version.replace('RDS Version ','')
+		version = version.split('-')[0]
+		version = version[:-1]
+	except:
+		version = 'Error'
 	nsrl_latest.configure(state='normal')
 	nsrl_latest.delete(0, END)
 	nsrl_latest.insert(0,version)
@@ -288,11 +338,90 @@ def latest_update():
 	
 	### Forensic Version Checker
 	soup = BeautifulSoup(response[12].text, 'html.parser')
-	version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
-	version = version.replace('v','')
-	if version != '1.0':
+	try:
+		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
+		version = version.replace('v','')
+	except:
+		version == '1.1'
+	if version != '1.1':
 		about.configure(text='Update FVC', fg='blue', cursor='hand2')
 		about.bind('<ButtonRelease-1>', lambda e:callback('https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'))
+	
+	### Arsenal Image Mounter
+	soup = BeautifulSoup(response[13].text, 'html.parser')
+	try:
+		version = soup.select_one('h4').text.strip()
+		version = version.replace('Arsenal Image Mounter v','')
+		version = version.split(' ')[0]
+	except:
+		version = 'Error'
+	aim_latest.configure(state='normal')
+	aim_latest.delete(0, END)
+	aim_latest.insert(0,version)
+	aim_latest.configure(state='readonly')
+	if aim_current.get() == aim_latest.get():
+		aim_latest.configure(readonlybackground='limegreen')
+		aim_update.configure(text='', cursor='')
+	elif aim_current.get() != '':
+		aim_latest.configure(readonlybackground='orange')
+		aim_update.configure(text='Update', fg='blue', cursor='hand2')
+	
+	### Passware
+	soup = BeautifulSoup(response[14].text, 'html.parser')
+	try:
+		version = soup.select_one('a[href^="https://blog.passware.com/passware-kit"]').select_one('h2').text.strip()
+		version = version.replace('Passware Kit','')
+		version = version.strip()
+	except:
+		version = 'Error'
+	passware_latest.configure(state='normal')
+	passware_latest.delete(0, END)
+	passware_latest.insert(0,version)
+	passware_latest.configure(state='readonly')
+	if passware_current.get() == passware_latest.get():
+		passware_latest.configure(readonlybackground='limegreen')
+		passware_update.configure(text='', cursor='')
+	elif passware_current.get() != '':
+		passware_latest.configure(readonlybackground='orange')
+		passware_update.configure(text='Update', fg='blue', cursor='hand2')
+	
+	### hashcat
+	soup = BeautifulSoup(response[15].text, 'html.parser')
+	try:
+		version = soup.select_one('a[href^="hashcat-"]')['href']
+		version = version.replace('hashcat-','')
+		version = version.replace('%2B','+')
+		version = version.replace('.7z','')
+	except:
+		version = 'Error'
+	hashcat_latest.configure(state='normal')
+	hashcat_latest.delete(0, END)
+	hashcat_latest.insert(0,version)
+	hashcat_latest.configure(state='readonly')
+	if hashcat_current.get() == hashcat_latest.get():
+		hashcat_latest.configure(readonlybackground='limegreen')
+		hashcat_update.configure(text='', cursor='')
+	elif hashcat_current.get() != '':
+		hashcat_latest.configure(readonlybackground='orange')
+		hashcat_update.configure(text='Update', fg='blue', cursor='hand2')
+	
+	### exiftool
+	soup = BeautifulSoup(response[16].text, 'html.parser')
+	try:
+		version = soup.findAll('a')[3]['name']
+		version = version.replace('v','')
+	except:
+		version = 'Error'
+	exiftool_latest.configure(state='normal')
+	exiftool_latest.delete(0, END)
+	exiftool_latest.insert(0,version)
+	exiftool_latest.configure(state='readonly')
+	if exiftool_current.get() == exiftool_latest.get():
+		exiftool_latest.configure(readonlybackground='limegreen')
+		exiftool_update.configure(text='', cursor='')
+	elif exiftool_current.get() != '':
+		exiftool_latest.configure(readonlybackground='orange')
+		exiftool_update.configure(text='Update', fg='blue', cursor='hand2')
 
 def current_save():
 	current_save.configure(text='Checking for updates...', state='disabled')
@@ -311,13 +440,17 @@ def current_save():
 	config['CURRENT']['xways'] = xways_current.get()
 	config['CURRENT']['cyberchef'] = cyberchef_current.get()
 	config['CURRENT']['nsrl'] = nsrl_current.get()
+	config['CURRENT']['aim'] = aim_current.get()
+	config['CURRENT']['passware'] = passware_current.get()
+	config['CURRENT']['hashcat'] = hashcat_current.get()
+	config['CURRENT']['exiftool'] = exiftool_current.get()
 	with open('current_versions.ini', 'w') as configfile:
 		config.write(configfile)
 	current_save.configure(text='Current versions saved', state='normal')
 	latest_update()
 
 def about_box():
-	messagebox.showinfo('About', 'Forensic Version Checker v1.0\n\nTool homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\nDigital Forensics Discord:\nhttps://discord.gg/pNMZunG')
+	messagebox.showinfo('About', 'Forensic Version Checker v1.1\n\nTool homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\nDigital Forensics Discord:\nhttps://discord.gg/pNMZunG')
 
 tool = Label(window, text='Tool', font=('TkDefaultFont', fontsize, 'underline'), padx=5, pady=3)
 tool.grid(column=0, row=0, sticky=W)
@@ -332,7 +465,10 @@ encase = Label(window, text='EnCase', padx=5)
 encase.grid(column=0, row=1, sticky=W)
 encase_current = Entry(window, width=8)
 encase_current.grid(column=1, row=1, sticky=N+S+E+W)
-encase_current.insert(0,config['CURRENT']['encase'])
+try:
+	encase_current.insert(0,config['CURRENT']['encase'])
+except:
+	encase_current.insert(0,'')
 encase_latest = Entry(window, width=8, state='readonly')
 encase_latest.grid(column=2, row=1, sticky=N+S+E+W)
 encase_update = Label(text='', padx=2)
@@ -343,7 +479,10 @@ blacklight = Label(window, text='BlackLight', padx=5)
 blacklight.grid(column=0, row=2, sticky=W)
 blacklight_current = Entry(window, width=8)
 blacklight_current.grid(column=1, row=2, sticky=N+S+E+W)
-blacklight_current.insert(0,config['CURRENT']['blacklight'])
+try:
+	blacklight_current.insert(0,config['CURRENT']['blacklight'])
+except:
+	blacklight_current.insert(0,'')
 blacklight_latest = Entry(window, width=8, state='readonly')
 blacklight_latest.grid(column=2, row=2, sticky=N+S+E+W)
 blacklight_update = Label(text='')
@@ -354,7 +493,10 @@ axiom = Label(window, text='AXIOM', padx=5)
 axiom.grid(column=0, row=3, sticky=W)
 axiom_current = Entry(window, width=8)
 axiom_current.grid(column=1, row=3, sticky=N+S+E+W)
-axiom_current.insert(0,config['CURRENT']['axiom'])
+try:
+	axiom_current.insert(0,config['CURRENT']['axiom'])
+except:
+	axiom_current.insert(0,'')
 axiom_latest = Entry(window, width=8, state='readonly')
 axiom_latest.grid(column=2, row=3, sticky=N+S+E+W)
 axiom_update = Label(text='')
@@ -365,7 +507,10 @@ ufed4pc = Label(window, text='UFED4PC', padx=5)
 ufed4pc.grid(column=0, row=4, sticky=W)
 ufed4pc_current = Entry(window, width=8)
 ufed4pc_current.grid(column=1, row=4, sticky=N+S+E+W)
-ufed4pc_current.insert(0,config['CURRENT']['ufed4pc'])
+try:
+	ufed4pc_current.insert(0,config['CURRENT']['ufed4pc'])
+except:
+	ufed4pc_current.insert(0,'')
 ufed4pc_latest = Entry(window, width=8, state='readonly')
 ufed4pc_latest.grid(column=2, row=4, sticky=N+S+E+W)
 ufed4pc_update = Label(text='')
@@ -376,7 +521,10 @@ physicalanalyzer = Label(window, text='Physical Analyzer', padx=5)
 physicalanalyzer.grid(column=0, row=5, sticky=W)
 physicalanalyzer_current = Entry(window, width=8)
 physicalanalyzer_current.grid(column=1, row=5, sticky=N+S+E+W)
-physicalanalyzer_current.insert(0,config['CURRENT']['physicalanalyzer'])
+try:
+	physicalanalyzer_current.insert(0,config['CURRENT']['physicalanalyzer'])
+except:
+	physicalanalyzer_current.insert(0,'')
 physicalanalyzer_latest = Entry(window, width=8, state='readonly')
 physicalanalyzer_latest.grid(column=2, row=5, sticky=N+S+E+W)
 physicalanalyzer_update = Label(text='')
@@ -387,7 +535,10 @@ osf = Label(window, text='OSForensics', padx=5)
 osf.grid(column=0, row=6, sticky=W)
 osf_current = Entry(window, width=8)
 osf_current.grid(column=1, row=6, sticky=N+S+E+W)
-osf_current.insert(0,config['CURRENT']['osf'])
+try:
+	osf_current.insert(0,config['CURRENT']['osf'])
+except:
+	osf_current.insert(0,'')
 osf_latest = Entry(window, width=8, state='readonly')
 osf_latest.grid(column=2, row=6, sticky=N+S+E+W)
 osf_update = Label(text='')
@@ -398,7 +549,10 @@ forensicexplorer = Label(window, text='ForensicExplorer', padx=5)
 forensicexplorer.grid(column=0, row=7, sticky=W)
 forensicexplorer_current = Entry(window, width=8)
 forensicexplorer_current.grid(column=1, row=7, sticky=N+S+E+W)
-forensicexplorer_current.insert(0,config['CURRENT']['forensicexplorer'])
+try:
+	forensicexplorer_current.insert(0,config['CURRENT']['forensicexplorer'])
+except:
+	forensicexplorer_current.insert(0,'')
 forensicexplorer_latest = Entry(window, width=8, state='readonly')
 forensicexplorer_latest.grid(column=2, row=7, sticky=N+S+E+W)
 forensicexplorer_update = Label(text='')
@@ -409,7 +563,10 @@ usbdetective = Label(window, text='USB Detective', padx=5)
 usbdetective.grid(column=0, row=8, sticky=W)
 usbdetective_current = Entry(window, width=8)
 usbdetective_current.grid(column=1, row=8, sticky=N+S+E+W)
-usbdetective_current.insert(0,config['CURRENT']['usbdetective'])
+try:
+	usbdetective_current.insert(0,config['CURRENT']['usbdetective'])
+except:
+	usbdetective_current.insert(0,'')
 usbdetective_latest = Entry(window, width=8, state='readonly')
 usbdetective_latest.grid(column=2, row=8, sticky=N+S+E+W)
 usbdetective_update = Label(text='')
@@ -420,7 +577,10 @@ ftk = Label(window, text='FTK', padx=5)
 ftk.grid(column=0, row=9, sticky=W)
 ftk_current = Entry(window, width=8)
 ftk_current.grid(column=1, row=9, sticky=N+S+E+W)
-ftk_current.insert(0,config['CURRENT']['ftk'])
+try:
+	ftk_current.insert(0,config['CURRENT']['ftk'])
+except:
+	ftk_current.insert(0,'')
 ftk_latest = Entry(window, width=8, state='readonly')
 ftk_latest.grid(column=2, row=9, sticky=N+S+E+W)
 ftk_update = Label(text='')
@@ -431,7 +591,10 @@ ftkimager = Label(window, text='FTK Imager', padx=5)
 ftkimager.grid(column=0, row=10, sticky=W)
 ftkimager_current = Entry(window, width=8)
 ftkimager_current.grid(column=1, row=10, sticky=N+S+E+W)
-ftkimager_current.insert(0,config['CURRENT']['ftkimager'])
+try:
+	ftkimager_current.insert(0,config['CURRENT']['ftkimager'])
+except:
+	ftkimager_current.insert(0,'')
 ftkimager_latest = Entry(window, width=8, state='readonly')
 ftkimager_latest.grid(column=2, row=10, sticky=N+S+E+W)
 ftkimager_update = Label(text='')
@@ -442,7 +605,10 @@ xamn = Label(window, text='XAMN', padx=5)
 xamn.grid(column=0, row=11, sticky=W)
 xamn_current = Entry(window, width=8)
 xamn_current.grid(column=1, row=11, sticky=N+S+E+W)
-xamn_current.insert(0,config['CURRENT']['xamn'])
+try:
+	xamn_current.insert(0,config['CURRENT']['xamn'])
+except:
+	xamn_current.insert(0,'')
 xamn_latest = Entry(window, width=8, state='readonly')
 xamn_latest.grid(column=2, row=11, sticky=N+S+E+W)
 xamn_update = Label(text='')
@@ -453,7 +619,10 @@ xways = Label(window, text='X-Ways', padx=5)
 xways.grid(column=0, row=12, sticky=W)
 xways_current = Entry(window, width=8)
 xways_current.grid(column=1, row=12, sticky=N+S+E+W)
-xways_current.insert(0,config['CURRENT']['xways'])
+try:
+	xways_current.insert(0,config['CURRENT']['xways'])
+except:
+	xways_current.insert(0,'')
 xways_latest = Entry(window, width=8, state='readonly')
 xways_latest.grid(column=2, row=12, sticky=N+S+E+W)
 xways_update = Label(text='')
@@ -464,7 +633,10 @@ cyberchef = Label(window, text='CyberChef', padx=5)
 cyberchef.grid(column=0, row=13, sticky=W)
 cyberchef_current = Entry(window, width=8)
 cyberchef_current.grid(column=1, row=13, sticky=N+S+E+W)
-cyberchef_current.insert(0,config['CURRENT']['cyberchef'])
+try:
+	cyberchef_current.insert(0,config['CURRENT']['cyberchef'])
+except:
+	cyberchef_current.insert(0,'')
 cyberchef_latest = Entry(window, width=8, state='readonly')
 cyberchef_latest.grid(column=2, row=13, sticky=N+S+E+W)
 cyberchef_update = Label(text='')
@@ -475,22 +647,81 @@ nsrl = Label(window, text='NSRL hash set', padx=5)
 nsrl.grid(column=0, row=14, sticky=W)
 nsrl_current = Entry(window, width=8)
 nsrl_current.grid(column=1, row=14, sticky=N+S+E+W)
-nsrl_current.insert(0,config['CURRENT']['nsrl'])
+try:
+	nsrl_current.insert(0,config['CURRENT']['nsrl'])
+except:
+	nsrl_current.insert(0,'')
 nsrl_latest = Entry(window, width=8, state='readonly')
 nsrl_latest.grid(column=2, row=14, sticky=N+S+E+W)
 nsrl_update = Label(text='')
 nsrl_update.grid(column=3, row=14)
 nsrl_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.nist.gov/itl/ssd/software-quality-group/nsrl-download/current-rds-hash-sets'))
 
+aim = Label(window, text='AIM', padx=5)
+aim.grid(column=0, row=15, sticky=W)
+aim_current = Entry(window, width=8)
+aim_current.grid(column=1, row=15, sticky=N+S+E+W)
+try:
+	aim_current.insert(0,config['CURRENT']['aim'])
+except:
+	aim_current.insert(0,'')
+aim_latest = Entry(window, width=8, state='readonly')
+aim_latest.grid(column=2, row=15, sticky=N+S+E+W)
+aim_update = Label(text='')
+aim_update.grid(column=3, row=15)
+aim_update.bind('<ButtonRelease-1>', lambda e:callback('https://arsenalrecon.com/downloads/'))
+
+passware = Label(window, text='Passware', padx=5)
+passware.grid(column=0, row=16, sticky=W)
+passware_current = Entry(window, width=8)
+passware_current.grid(column=1, row=16, sticky=N+S+E+W)
+try:
+	passware_current.insert(0,config['CURRENT']['passware'])
+except:
+	passware_current.insert(0,'')
+passware_latest = Entry(window, width=8, state='readonly')
+passware_latest.grid(column=2, row=16, sticky=N+S+E+W)
+passware_update = Label(text='')
+passware_update.grid(column=3, row=16)
+passware_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.passware.com/kit-forensic/whatsnew/'))
+
+hashcat = Label(window, text='hashcat', padx=5)
+hashcat.grid(column=0, row=17, sticky=W)
+hashcat_current = Entry(window, width=8)
+hashcat_current.grid(column=1, row=17, sticky=N+S+E+W)
+try:
+	hashcat_current.insert(0,config['CURRENT']['hashcat'])
+except:
+	hashcat_current.insert(0,'')
+hashcat_latest = Entry(window, width=8, state='readonly')
+hashcat_latest.grid(column=2, row=17, sticky=N+S+E+W)
+hashcat_update = Label(text='')
+hashcat_update.grid(column=3, row=17)
+hashcat_update.bind('<ButtonRelease-1>', lambda e:callback('https://hashcat.net/hashcat/'))
+
+exiftool = Label(window, text='exiftool', padx=5)
+exiftool.grid(column=0, row=18, sticky=W)
+exiftool_current = Entry(window, width=8)
+exiftool_current.grid(column=1, row=18, sticky=N+S+E+W)
+try:
+	exiftool_current.insert(0,config['CURRENT']['exiftool'])
+except:
+	exiftool_current.insert(0,'')
+exiftool_latest = Entry(window, width=8, state='readonly')
+exiftool_latest.grid(column=2, row=18, sticky=N+S+E+W)
+exiftool_update = Label(text='')
+exiftool_update.grid(column=3, row=18)
+exiftool_update.bind('<ButtonRelease-1>', lambda e:callback('https://owl.phy.queensu.ca/~phil/exiftool/'))
+
 divider = Label(window, text='', font=('TkDefaultFont', 1, 'underline'))
-divider.grid(column=1, row=15)
+divider.grid(column=1, row=19)
 
 about = Label(window, text='?', padx=5, fg='grey', cursor='hand2')
-about.grid(column=0, row=16, sticky=W)
+about.grid(column=0, row=20, sticky=W)
 about.bind('<ButtonRelease-1>', lambda e: about_box())
 
 current_save = Button(window, text='Save', command=current_save)
-current_save.grid(column=1, row=16, columnspan=2, sticky=N+S+E+W)
+current_save.grid(column=1, row=20, columnspan=2, sticky=N+S+E+W)
 
 if first_run != True:
 	current_save.configure(text='Checking for updates...', state='disabled')
