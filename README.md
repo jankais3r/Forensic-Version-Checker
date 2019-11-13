@@ -22,6 +22,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - Passware
 - hashcat
 - ExifTool
+- Belkasoft Evidence Center
 
 If your favorite tool is missing, feel free to open an Issue and provide me with a link to that tool's website.
 
