@@ -14,10 +14,10 @@ window = Tk()
 window.title('Forensic Version Checker')
 
 if os.name == 'nt':
-	window.geometry('345x440')
+	window.geometry('345x465')
 	fontsize = 9
 else:
-	window.geometry('315x400')
+	window.geometry('315x420')
 	fontsize = 10
 
 
@@ -40,7 +40,8 @@ nsrl =
 aim = 
 passware = 
 hashcat = 
-exiftool = 
+exiftool =
+bec = 
 """
 
 	configfile = open('current_versions.ini', 'w')
@@ -74,7 +75,8 @@ def latest_update():
 			'https://arsenalrecon.com/downloads/',
 			'https://blog.passware.com/category/product-update/',
 			'https://hashcat.net/beta/',
-			'https://owl.phy.queensu.ca/~phil/exiftool/history.html'
+			'https://owl.phy.queensu.ca/~phil/exiftool/history.html',
+			'https://belkasoft.com/becver.txt'
         ]
 	response = grequests.map((grequests.get(u) for u in urls), size=3)
 	
@@ -133,7 +135,7 @@ def latest_update():
 		axiom_latest.configure(readonlybackground='orange')
 		axiom_update.configure(text='Update', fg='blue', cursor='hand2')
 	
-	## UFED4PC
+	### UFED4PC
 	soup = BeautifulSoup(response[3].text, 'html.parser')
 	try:
 		version = soup.find(text=re.compile('UFED 4PC')).parent.select_one('b').text.strip()
@@ -151,7 +153,7 @@ def latest_update():
 		ufed4pc_latest.configure(readonlybackground='orange')
 		ufed4pc_update.configure(text='Update', fg='blue', cursor='hand2')
 	
-	#Physical Analyzer
+	### Physical Analyzer
 	soup = BeautifulSoup(response[3].text, 'html.parser')
 	try:
 		version = soup.find(text=re.compile('Physical|Logical Analyzer')).parent.select_one('b').text.strip()
@@ -266,8 +268,8 @@ def latest_update():
 	### XAMN
 	soup = BeautifulSoup(response[8].text, 'html.parser')
 	try:
-		version = soup.select_one('a[href^="https://www.msab.com/download/msab_software/XAMN"]').text.strip()
-		version = version.replace('XAMN Viewer v','')
+		version = soup.find('a', {'class': 'wpfd_downloadlink'})['title']
+		version = version.replace('XAMN v','')
 	except:
 		version = 'Error'
 	xamn_latest.configure(state='normal')
@@ -342,8 +344,8 @@ def latest_update():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v','')
 	except:
-		version == '1.1'
-	if version != '1.1':
+		version == '1.2'
+	if version != '1.2':
 		about.configure(text='Update FVC', fg='blue', cursor='hand2')
 		about.bind('<ButtonRelease-1>', lambda e:callback('https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'))
 	
@@ -405,7 +407,7 @@ def latest_update():
 		hashcat_latest.configure(readonlybackground='orange')
 		hashcat_update.configure(text='Update', fg='blue', cursor='hand2')
 	
-	### exiftool
+	### ExifTool
 	soup = BeautifulSoup(response[16].text, 'html.parser')
 	try:
 		version = soup.findAll('a')[3]['name']
@@ -422,6 +424,23 @@ def latest_update():
 	elif exiftool_current.get() != '':
 		exiftool_latest.configure(readonlybackground='orange')
 		exiftool_update.configure(text='Update', fg='blue', cursor='hand2')
+	
+	### Belkasoft Evidence Center
+	soup = BeautifulSoup(response[17].text, 'html.parser')
+	try:
+		version = soup
+	except:
+		version = 'Error'
+	bec_latest.configure(state='normal')
+	bec_latest.delete(0, END)
+	bec_latest.insert(0,version)
+	bec_latest.configure(state='readonly')
+	if bec_current.get() == bec_latest.get():
+		bec_latest.configure(readonlybackground='limegreen')
+		bec_update.configure(text='', cursor='')
+	elif bec_current.get() != '':
+		bec_latest.configure(readonlybackground='orange')
+		bec_update.configure(text='Update', fg='blue', cursor='hand2')
 
 def current_save():
 	current_save.configure(text='Checking for updates...', state='disabled')
@@ -444,13 +463,14 @@ def current_save():
 	config['CURRENT']['passware'] = passware_current.get()
 	config['CURRENT']['hashcat'] = hashcat_current.get()
 	config['CURRENT']['exiftool'] = exiftool_current.get()
+	config['CURRENT']['bec'] = bec_current.get()
 	with open('current_versions.ini', 'w') as configfile:
 		config.write(configfile)
 	current_save.configure(text='Current versions saved', state='normal')
 	latest_update()
 
 def about_box():
-	messagebox.showinfo('About', 'Forensic Version Checker v1.1\n\nTool homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\nDigital Forensics Discord:\nhttps://discord.gg/pNMZunG')
+	messagebox.showinfo('About', 'Forensic Version Checker v1.2\n\nTool\'s homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\nDigital Forensics Discord:\nhttps://discord.gg/pNMZunG')
 
 tool = Label(window, text='Tool', font=('TkDefaultFont', fontsize, 'underline'), padx=5, pady=3)
 tool.grid(column=0, row=0, sticky=W)
@@ -461,6 +481,7 @@ latest.grid(column=2, row=0)
 latest = Label(window, text='Update', font=('TkDefaultFont', fontsize, 'underline'), pady=3)
 latest.grid(column=3, row=0)
 
+### EnCase
 encase = Label(window, text='EnCase', padx=5)
 encase.grid(column=0, row=1, sticky=W)
 encase_current = Entry(window, width=8)
@@ -475,6 +496,7 @@ encase_update = Label(text='', padx=2)
 encase_update.grid(column=3, row=1)
 encase_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.guidancesoftware.com/encase-forensic'))
 
+### BlackLight
 blacklight = Label(window, text='BlackLight', padx=5)
 blacklight.grid(column=0, row=2, sticky=W)
 blacklight_current = Entry(window, width=8)
@@ -489,6 +511,7 @@ blacklight_update = Label(text='')
 blacklight_update.grid(column=3, row=2)
 blacklight_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.blackbagtech.com/downloads/'))
 
+### AXIOM
 axiom = Label(window, text='AXIOM', padx=5)
 axiom.grid(column=0, row=3, sticky=W)
 axiom_current = Entry(window, width=8)
@@ -503,7 +526,8 @@ axiom_update = Label(text='')
 axiom_update.grid(column=3, row=3)
 axiom_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.magnetforensics.com/downloadaxiom/'))
 
-ufed4pc = Label(window, text='UFED4PC', padx=5)
+### UFED4PC
+ufed4pc = Label(window, text='UFED 4PC', padx=5)
 ufed4pc.grid(column=0, row=4, sticky=W)
 ufed4pc_current = Entry(window, width=8)
 ufed4pc_current.grid(column=1, row=4, sticky=N+S+E+W)
@@ -517,6 +541,7 @@ ufed4pc_update = Label(text='')
 ufed4pc_update.grid(column=3, row=4)
 ufed4pc_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.cellebrite.com/en/support/product-releases/'))
 
+### Physical Analyzer
 physicalanalyzer = Label(window, text='Physical Analyzer', padx=5)
 physicalanalyzer.grid(column=0, row=5, sticky=W)
 physicalanalyzer_current = Entry(window, width=8)
@@ -531,6 +556,7 @@ physicalanalyzer_update = Label(text='')
 physicalanalyzer_update.grid(column=3, row=5)
 physicalanalyzer_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.cellebrite.com/en/support/product-releases/'))
 
+### OSF
 osf = Label(window, text='OSForensics', padx=5)
 osf.grid(column=0, row=6, sticky=W)
 osf_current = Entry(window, width=8)
@@ -545,6 +571,7 @@ osf_update = Label(text='')
 osf_update.grid(column=3, row=6)
 osf_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.osforensics.com/download.html'))
 
+### ForensicExplorer
 forensicexplorer = Label(window, text='ForensicExplorer', padx=5)
 forensicexplorer.grid(column=0, row=7, sticky=W)
 forensicexplorer_current = Entry(window, width=8)
@@ -559,6 +586,7 @@ forensicexplorer_update = Label(text='')
 forensicexplorer_update.grid(column=3, row=7)
 forensicexplorer_update.bind('<ButtonRelease-1>', lambda e:callback('http://www.forensicexplorer.com/download.php'))
 
+### USB Detective
 usbdetective = Label(window, text='USB Detective', padx=5)
 usbdetective.grid(column=0, row=8, sticky=W)
 usbdetective_current = Entry(window, width=8)
@@ -573,6 +601,7 @@ usbdetective_update = Label(text='')
 usbdetective_update.grid(column=3, row=8)
 usbdetective_update.bind('<ButtonRelease-1>', lambda e:callback('https://usbdetective.com/release-notes/'))
 
+### FTK
 ftk = Label(window, text='FTK', padx=5)
 ftk.grid(column=0, row=9, sticky=W)
 ftk_current = Entry(window, width=8)
@@ -587,6 +616,7 @@ ftk_update = Label(text='')
 ftk_update.grid(column=3, row=9)
 ftk_update.bind('<ButtonRelease-1>', lambda e:callback('https://accessdata.com/product-download'))
 
+### FTK Imager
 ftkimager = Label(window, text='FTK Imager', padx=5)
 ftkimager.grid(column=0, row=10, sticky=W)
 ftkimager_current = Entry(window, width=8)
@@ -601,6 +631,7 @@ ftkimager_update = Label(text='')
 ftkimager_update.grid(column=3, row=10)
 ftkimager_update.bind('<ButtonRelease-1>', lambda e:callback('https://accessdata.com/product-download'))
 
+### XAMN
 xamn = Label(window, text='XAMN', padx=5)
 xamn.grid(column=0, row=11, sticky=W)
 xamn_current = Entry(window, width=8)
@@ -615,6 +646,7 @@ xamn_update = Label(text='')
 xamn_update.grid(column=3, row=11)
 xamn_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.msab.com/downloads/'))
 
+### X-Ways
 xways = Label(window, text='X-Ways', padx=5)
 xways.grid(column=0, row=12, sticky=W)
 xways_current = Entry(window, width=8)
@@ -629,6 +661,7 @@ xways_update = Label(text='')
 xways_update.grid(column=3, row=12)
 xways_update.bind('<ButtonRelease-1>', lambda e:callback('http://www.x-ways.net/winhex/license.html'))
 
+### CyberChef
 cyberchef = Label(window, text='CyberChef', padx=5)
 cyberchef.grid(column=0, row=13, sticky=W)
 cyberchef_current = Entry(window, width=8)
@@ -643,6 +676,7 @@ cyberchef_update = Label(text='')
 cyberchef_update.grid(column=3, row=13)
 cyberchef_update.bind('<ButtonRelease-1>', lambda e:callback('https://github.com/gchq/CyberChef/releases/latest'))
 
+### NSRL
 nsrl = Label(window, text='NSRL hash set', padx=5)
 nsrl.grid(column=0, row=14, sticky=W)
 nsrl_current = Entry(window, width=8)
@@ -657,6 +691,7 @@ nsrl_update = Label(text='')
 nsrl_update.grid(column=3, row=14)
 nsrl_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.nist.gov/itl/ssd/software-quality-group/nsrl-download/current-rds-hash-sets'))
 
+### Arsenal Image Mounter
 aim = Label(window, text='AIM', padx=5)
 aim.grid(column=0, row=15, sticky=W)
 aim_current = Entry(window, width=8)
@@ -671,6 +706,7 @@ aim_update = Label(text='')
 aim_update.grid(column=3, row=15)
 aim_update.bind('<ButtonRelease-1>', lambda e:callback('https://arsenalrecon.com/downloads/'))
 
+### Passware
 passware = Label(window, text='Passware', padx=5)
 passware.grid(column=0, row=16, sticky=W)
 passware_current = Entry(window, width=8)
@@ -685,6 +721,7 @@ passware_update = Label(text='')
 passware_update.grid(column=3, row=16)
 passware_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.passware.com/kit-forensic/whatsnew/'))
 
+### hashcat
 hashcat = Label(window, text='hashcat', padx=5)
 hashcat.grid(column=0, row=17, sticky=W)
 hashcat_current = Entry(window, width=8)
@@ -699,7 +736,8 @@ hashcat_update = Label(text='')
 hashcat_update.grid(column=3, row=17)
 hashcat_update.bind('<ButtonRelease-1>', lambda e:callback('https://hashcat.net/hashcat/'))
 
-exiftool = Label(window, text='exiftool', padx=5)
+### ExifTool
+exiftool = Label(window, text='ExifTool', padx=5)
 exiftool.grid(column=0, row=18, sticky=W)
 exiftool_current = Entry(window, width=8)
 exiftool_current.grid(column=1, row=18, sticky=N+S+E+W)
@@ -713,15 +751,30 @@ exiftool_update = Label(text='')
 exiftool_update.grid(column=3, row=18)
 exiftool_update.bind('<ButtonRelease-1>', lambda e:callback('https://owl.phy.queensu.ca/~phil/exiftool/'))
 
+### Belkasoft Evidence Center
+bec = Label(window, text='BEC', padx=5)
+bec.grid(column=0, row=19, sticky=W)
+bec_current = Entry(window, width=8)
+bec_current.grid(column=1, row=19, sticky=N+S+E+W)
+try:
+	bec_current.insert(0,config['CURRENT']['bec'])
+except:
+	bec_current.insert(0,'')
+bec_latest = Entry(window, width=8, state='readonly')
+bec_latest.grid(column=2, row=19, sticky=N+S+E+W)
+bec_update = Label(text='')
+bec_update.grid(column=3, row=19)
+bec_update.bind('<ButtonRelease-1>', lambda e:callback('https://belkasoft.com/get'))
+
 divider = Label(window, text='', font=('TkDefaultFont', 1, 'underline'))
-divider.grid(column=1, row=19)
+divider.grid(column=1, row=20)
 
 about = Label(window, text='?', padx=5, fg='grey', cursor='hand2')
-about.grid(column=0, row=20, sticky=W)
+about.grid(column=0, row=21, sticky=W)
 about.bind('<ButtonRelease-1>', lambda e: about_box())
 
 current_save = Button(window, text='Save', command=current_save)
-current_save.grid(column=1, row=20, columnspan=2, sticky=N+S+E+W)
+current_save.grid(column=1, row=21, columnspan=2, sticky=N+S+E+W)
 
 if first_run != True:
 	current_save.configure(text='Checking for updates...', state='disabled')
