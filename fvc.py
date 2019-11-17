@@ -14,10 +14,10 @@ window = Tk()
 window.title('Forensic Version Checker')
 
 if os.name == 'nt':
-	window.geometry('345x465')
+	window.geometry('345x530')
 	fontsize = 9
 else:
-	window.geometry('315x420')
+	window.geometry('315x475')
 	fontsize = 10
 
 
@@ -42,6 +42,9 @@ passware =
 hashcat = 
 exiftool =
 bec = 
+caine = 
+deft = 
+ffn = 
 """
 
 	configfile = open('current_versions.ini', 'w')
@@ -59,6 +62,10 @@ def callback(url):
 	webbrowser.open_new(url)
 
 def latest_update():
+	ua_headers = {
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36'
+	}
+	
 	urls = ['https://www.guidancesoftware.com/encase-forensic',
             'https://www.blackbagtech.com/downloads/', 
             'https://www.magnetforensics.com/downloadaxiom/',
@@ -69,16 +76,19 @@ def latest_update():
             'https://accessdata.com/product-download',
             'https://www.msab.com/downloads/',
             'https://www.x-ways.net/forensics/index-m.html',
-            'https://github.com/gchq/CyberChef/blob/master/CHANGELOG.md',
+            'https://github.com/gchq/CyberChef/releases/latest',
             'https://www.nist.gov/itl/ssd/software-quality-group/nsrl-download/current-rds-hash-sets',
             'https://github.com/jankais3r/Forensic-Version-Checker/releases/latest',
 			'https://arsenalrecon.com/downloads/',
 			'https://blog.passware.com/category/product-update/',
 			'https://hashcat.net/beta/',
 			'https://owl.phy.queensu.ca/~phil/exiftool/history.html',
-			'https://belkasoft.com/becver.txt'
+			'https://belkasoft.com/becver.txt',
+			'https://distrowatch.com/table.php?distribution=caine',
+			'https://distrowatch.com/table.php?distribution=deft',
+			'https://www.logicube.com/knowledge/forensic-falcon-neo/'
         ]
-	response = grequests.map((grequests.get(u) for u in urls), size=3)
+	response = grequests.map((grequests.get(u, headers=ua_headers) for u in urls), size=3)
 	
 	### EnCase
 	soup = BeautifulSoup(response[0].text, 'html.parser')
@@ -88,6 +98,7 @@ def latest_update():
 		version = version.split(':')[0]
 	except:
 		version = 'Error'
+		encase_latest.configure(readonlybackground='red')
 	encase_latest.configure(state='normal')
 	encase_latest.delete(0, END)
 	encase_latest.insert(0,version)
@@ -95,7 +106,7 @@ def latest_update():
 	if encase_current.get() == encase_latest.get():
 		encase_latest.configure(readonlybackground='limegreen')
 		encase_update.configure(text='', cursor='')
-	elif encase_current.get() != '':
+	elif ((encase_current.get() != '') and (encase_latest.get() != 'Error')):
 		encase_latest.configure(readonlybackground='orange')
 		encase_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -106,6 +117,7 @@ def latest_update():
 		version = version.replace('BlackLight ','')
 	except:
 		version = 'Error'
+		blacklight_latest.configure(readonlybackground='red')
 	blacklight_latest.configure(state='normal')
 	blacklight_latest.delete(0, END)
 	blacklight_latest.insert(0,version)
@@ -113,7 +125,7 @@ def latest_update():
 	if blacklight_current.get() == blacklight_latest.get():
 		blacklight_latest.configure(readonlybackground='limegreen')
 		blacklight_update.configure(text='', cursor='')
-	elif blacklight_current.get() != '':
+	elif ((blacklight_current.get() != '') and (blacklight_latest.get() != 'Error')):
 		blacklight_latest.configure(readonlybackground='orange')
 		blacklight_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -124,6 +136,7 @@ def latest_update():
 		version = version.replace('MAGNET AXIOM ','')
 	except:
 		version = 'Error'
+		axiom_latest.configure(readonlybackground='red')
 	axiom_latest.configure(state='normal')
 	axiom_latest.delete(0, END)
 	axiom_latest.insert(0,version)
@@ -131,17 +144,18 @@ def latest_update():
 	if axiom_current.get() == axiom_latest.get():
 		axiom_latest.configure(readonlybackground='limegreen')
 		axiom_update.configure(text='', cursor='')
-	elif axiom_current.get() != '':
+	elif ((axiom_current.get() != '') and (axiom_latest.get() != 'Error')):
 		axiom_latest.configure(readonlybackground='orange')
 		axiom_update.configure(text='Update', fg='blue', cursor='hand2')
 	
-	### UFED4PC
+	### UFED 4PC
 	soup = BeautifulSoup(response[3].text, 'html.parser')
 	try:
-		version = soup.find(text=re.compile('UFED 4PC')).parent.select_one('b').text.strip()
+		version = soup.find(text=re.compile('UFED.(4PC|Ultimate).')).parent.select_one('b').text.strip()
 		version = version.replace('Version ','')
 	except:
 		version = 'Error'
+		ufed4pc_latest.configure(readonlybackground='red')
 	ufed4pc_latest.configure(state='normal')
 	ufed4pc_latest.delete(0, END)
 	ufed4pc_latest.insert(0,version)
@@ -149,17 +163,18 @@ def latest_update():
 	if ufed4pc_current.get() == ufed4pc_latest.get():
 		ufed4pc_latest.configure(readonlybackground='limegreen')
 		ufed4pc_update.configure(text='', cursor='')
-	elif ufed4pc_current.get() != '':
+	elif ((ufed4pc_current.get() != '') and (ufed4pc_latest.get() != 'Error')):
 		ufed4pc_latest.configure(readonlybackground='orange')
 		ufed4pc_update.configure(text='Update', fg='blue', cursor='hand2')
 	
 	### Physical Analyzer
 	soup = BeautifulSoup(response[3].text, 'html.parser')
 	try:
-		version = soup.find(text=re.compile('Physical|Logical Analyzer')).parent.select_one('b').text.strip()
+		version = soup.find(text=re.compile('(Physical|Logical).Analyzer.')).parent.select_one('b').text.strip()
 		version = version.replace('Version ','')
 	except:
 		version = 'Error'
+		physicalanalyzer_latest.configure(readonlybackground='red')
 	physicalanalyzer_latest.configure(state='normal')
 	physicalanalyzer_latest.delete(0, END)
 	physicalanalyzer_latest.insert(0,version)
@@ -167,7 +182,7 @@ def latest_update():
 	if physicalanalyzer_current.get() == physicalanalyzer_latest.get():
 		physicalanalyzer_latest.configure(readonlybackground='limegreen')
 		physicalanalyzer_update.configure(text='', cursor='')
-	elif physicalanalyzer_current.get() != '':
+	elif ((physicalanalyzer_current.get() != '') and (physicalanalyzer_latest.get() != 'Error')):
 		physicalanalyzer_latest.configure(readonlybackground='orange')
 		physicalanalyzer_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -180,6 +195,7 @@ def latest_update():
 		version = version[1:]
 	except:
 		version = 'Error'
+		osf_latest.configure(readonlybackground='red')
 	osf_latest.configure(state='normal')
 	osf_latest.delete(0, END)
 	osf_latest.insert(0,version)
@@ -187,7 +203,7 @@ def latest_update():
 	if osf_current.get() == osf_latest.get():
 		osf_latest.configure(readonlybackground='limegreen')
 		osf_update.configure(text='', cursor='')
-	elif osf_current.get() != '':
+	elif ((osf_current.get() != '') and (osf_latest.get() != 'Error')):
 		osf_latest.configure(readonlybackground='orange')
 		osf_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -199,6 +215,7 @@ def latest_update():
 		version = version[2:-5]
 	except:
 		version = 'Error'
+		forensicexplorer_latest.configure(readonlybackground='red')
 	forensicexplorer_latest.configure(state='normal')
 	forensicexplorer_latest.delete(0, END)
 	forensicexplorer_latest.insert(0,version)
@@ -206,7 +223,7 @@ def latest_update():
 	if forensicexplorer_current.get() == forensicexplorer_latest.get():
 		forensicexplorer_latest.configure(readonlybackground='limegreen')
 		forensicexplorer_update.configure(text='', cursor='')
-	elif forensicexplorer_current.get() != '':
+	elif ((forensicexplorer_current.get() != '') and (forensicexplorer_latest.get() != 'Error')):
 		forensicexplorer_latest.configure(readonlybackground='orange')
 		forensicexplorer_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -218,6 +235,7 @@ def latest_update():
 		version = version.split(' ')[0]
 	except:
 		version = 'Error'
+		usbdetective_latest.configure(readonlybackground='red')
 	usbdetective_latest.configure(state='normal')
 	usbdetective_latest.delete(0, END)
 	usbdetective_latest.insert(0,version)
@@ -225,7 +243,7 @@ def latest_update():
 	if usbdetective_current.get() == usbdetective_latest.get():
 		usbdetective_latest.configure(readonlybackground='limegreen')
 		usbdetective_update.configure(text='', cursor='')
-	elif usbdetective_current.get() != '':
+	elif ((usbdetective_current.get() != '') and (usbdetective_latest.get() != 'Error')):
 		usbdetective_latest.configure(readonlybackground='orange')
 		usbdetective_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -236,6 +254,7 @@ def latest_update():
 		version = version.replace('Forensic Toolkit (FTK) version ','')
 	except:
 		version = 'Error'
+		ftk_latest.configure(readonlybackground='red')
 	ftk_latest.configure(state='normal')
 	ftk_latest.delete(0, END)
 	ftk_latest.insert(0,version)
@@ -243,7 +262,7 @@ def latest_update():
 	if ftk_current.get() == ftk_latest.get():
 		ftk_latest.configure(readonlybackground='limegreen')
 		ftk_update.configure(text='', cursor='')
-	elif ftk_current.get() != '':
+	elif ((ftk_current.get() != '') and (ftk_latest.get() != 'Error')):
 		ftk_latest.configure(readonlybackground='orange')
 		ftk_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -254,6 +273,7 @@ def latest_update():
 		version = version.replace('FTK Imager version ','')
 	except:
 		version = 'Error'
+		ftkimager_latest.configure(readonlybackground='red')
 	ftkimager_latest.configure(state='normal')
 	ftkimager_latest.delete(0, END)
 	ftkimager_latest.insert(0,version)
@@ -261,7 +281,7 @@ def latest_update():
 	if ftkimager_current.get() == ftkimager_latest.get():
 		ftkimager_latest.configure(readonlybackground='limegreen')
 		ftkimager_update.configure(text='', cursor='')
-	elif ftkimager_current.get() != '':
+	elif ((ftkimager_current.get() != '') and (ftkimager_latest.get() != 'Error')):
 		ftkimager_latest.configure(readonlybackground='orange')
 		ftkimager_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -272,6 +292,7 @@ def latest_update():
 		version = version.replace('XAMN v','')
 	except:
 		version = 'Error'
+		xamn_latest.configure(readonlybackground='red')
 	xamn_latest.configure(state='normal')
 	xamn_latest.delete(0, END)
 	xamn_latest.insert(0,version)
@@ -279,7 +300,7 @@ def latest_update():
 	if xamn_current.get() == xamn_latest.get():
 		xamn_latest.configure(readonlybackground='limegreen')
 		xamn_update.configure(text='', cursor='')
-	elif xamn_current.get() != '':
+	elif ((xamn_current.get() != '') and (xamn_latest.get() != 'Error')):
 		xamn_latest.configure(readonlybackground='orange')
 		xamn_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -290,6 +311,7 @@ def latest_update():
 		version = version[19:].strip()
 	except:
 		version = 'Error'
+		xways_latest.configure(readonlybackground='red')
 	xways_latest.configure(state='normal')
 	xways_latest.delete(0, END)
 	xways_latest.insert(0,version)
@@ -297,16 +319,18 @@ def latest_update():
 	if xways_current.get() == xways_latest.get():
 		xways_latest.configure(readonlybackground='limegreen')
 		xways_update.configure(text='', cursor='')
-	elif xways_current.get() != '':
+	elif ((xways_current.get() != '') and (xways_latest.get() != 'Error')):
 		xways_latest.configure(readonlybackground='orange')
 		xways_update.configure(text='Update', fg='blue', cursor='hand2')
 	
 	### CyberChef
 	soup = BeautifulSoup(response[10].text, 'html.parser')
 	try:
-		version = soup.select_one('a[href^="https://github.com/gchq/CyberChef/releases/"]').text.strip()
+		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
+		version = version.replace('v','')
 	except:
 		version = 'Error'
+		cyberchef_latest.configure(readonlybackground='red')
 	cyberchef_latest.configure(state='normal')
 	cyberchef_latest.delete(0, END)
 	cyberchef_latest.insert(0,version)
@@ -314,7 +338,7 @@ def latest_update():
 	if cyberchef_current.get() == cyberchef_latest.get():
 		cyberchef_latest.configure(readonlybackground='limegreen')
 		cyberchef_update.configure(text='', cursor='')
-	elif cyberchef_current.get() != '':
+	elif ((cyberchef_current.get() != '') and (cyberchef_latest.get() != 'Error')):
 		cyberchef_latest.configure(readonlybackground='orange')
 		cyberchef_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -327,6 +351,7 @@ def latest_update():
 		version = version[:-1]
 	except:
 		version = 'Error'
+		nsrl_latest.configure(readonlybackground='red')
 	nsrl_latest.configure(state='normal')
 	nsrl_latest.delete(0, END)
 	nsrl_latest.insert(0,version)
@@ -334,7 +359,7 @@ def latest_update():
 	if nsrl_current.get() == nsrl_latest.get():
 		nsrl_latest.configure(readonlybackground='limegreen')
 		nsrl_update.configure(text='', cursor='')
-	elif nsrl_current.get() != '':
+	elif ((nsrl_current.get() != '') and (nsrl_latest.get() != 'Error')):
 		nsrl_latest.configure(readonlybackground='orange')
 		nsrl_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -344,8 +369,8 @@ def latest_update():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v','')
 	except:
-		version == '1.2'
-	if version != '1.2':
+		version == '1.3'
+	if version != '1.3':
 		about.configure(text='Update FVC', fg='blue', cursor='hand2')
 		about.bind('<ButtonRelease-1>', lambda e:callback('https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'))
 	
@@ -357,6 +382,7 @@ def latest_update():
 		version = version.split(' ')[0]
 	except:
 		version = 'Error'
+		aim_latest.configure(readonlybackground='red')
 	aim_latest.configure(state='normal')
 	aim_latest.delete(0, END)
 	aim_latest.insert(0,version)
@@ -364,7 +390,7 @@ def latest_update():
 	if aim_current.get() == aim_latest.get():
 		aim_latest.configure(readonlybackground='limegreen')
 		aim_update.configure(text='', cursor='')
-	elif aim_current.get() != '':
+	elif ((aim_current.get() != '') and (aim_latest.get() != 'Error')):
 		aim_latest.configure(readonlybackground='orange')
 		aim_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -376,6 +402,7 @@ def latest_update():
 		version = version.strip()
 	except:
 		version = 'Error'
+		passware_latest.configure(readonlybackground='red')
 	passware_latest.configure(state='normal')
 	passware_latest.delete(0, END)
 	passware_latest.insert(0,version)
@@ -383,7 +410,7 @@ def latest_update():
 	if passware_current.get() == passware_latest.get():
 		passware_latest.configure(readonlybackground='limegreen')
 		passware_update.configure(text='', cursor='')
-	elif passware_current.get() != '':
+	elif ((passware_current.get() != '') and (passware_latest.get() != 'Error')):
 		passware_latest.configure(readonlybackground='orange')
 		passware_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -396,6 +423,7 @@ def latest_update():
 		version = version.replace('.7z','')
 	except:
 		version = 'Error'
+		hashcat_latest.configure(readonlybackground='red')
 	hashcat_latest.configure(state='normal')
 	hashcat_latest.delete(0, END)
 	hashcat_latest.insert(0,version)
@@ -403,7 +431,7 @@ def latest_update():
 	if hashcat_current.get() == hashcat_latest.get():
 		hashcat_latest.configure(readonlybackground='limegreen')
 		hashcat_update.configure(text='', cursor='')
-	elif hashcat_current.get() != '':
+	elif ((hashcat_current.get() != '') and (hashcat_latest.get() != 'Error')):
 		hashcat_latest.configure(readonlybackground='orange')
 		hashcat_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -414,6 +442,7 @@ def latest_update():
 		version = version.replace('v','')
 	except:
 		version = 'Error'
+		exiftool_latest.configure(readonlybackground='red')
 	exiftool_latest.configure(state='normal')
 	exiftool_latest.delete(0, END)
 	exiftool_latest.insert(0,version)
@@ -421,7 +450,7 @@ def latest_update():
 	if exiftool_current.get() == exiftool_latest.get():
 		exiftool_latest.configure(readonlybackground='limegreen')
 		exiftool_update.configure(text='', cursor='')
-	elif exiftool_current.get() != '':
+	elif ((exiftool_current.get() != '') and (exiftool_latest.get() != 'Error')):
 		exiftool_latest.configure(readonlybackground='orange')
 		exiftool_update.configure(text='Update', fg='blue', cursor='hand2')
 	
@@ -431,6 +460,7 @@ def latest_update():
 		version = soup
 	except:
 		version = 'Error'
+		bec_latest.configure(readonlybackground='red')
 	bec_latest.configure(state='normal')
 	bec_latest.delete(0, END)
 	bec_latest.insert(0,version)
@@ -438,9 +468,63 @@ def latest_update():
 	if bec_current.get() == bec_latest.get():
 		bec_latest.configure(readonlybackground='limegreen')
 		bec_update.configure(text='', cursor='')
-	elif bec_current.get() != '':
+	elif ((bec_current.get() != '') and (bec_latest.get() != 'Error')):
 		bec_latest.configure(readonlybackground='orange')
 		bec_update.configure(text='Update', fg='blue', cursor='hand2')
+	
+	### CAINE
+	soup = BeautifulSoup(response[18].text, 'html.parser')
+	try:
+		version = soup.find('td', {'class': 'TablesInvert'}).text.strip()
+	except:
+		version = 'Error'
+		caine_latest.configure(readonlybackground='red')
+	caine_latest.configure(state='normal')
+	caine_latest.delete(0, END)
+	caine_latest.insert(0,version)
+	caine_latest.configure(state='readonly')
+	if caine_current.get() == caine_latest.get():
+		caine_latest.configure(readonlybackground='limegreen')
+		caine_update.configure(text='', cursor='')
+	elif ((caine_current.get() != '') and (caine_latest.get() != 'Error')):
+		caine_latest.configure(readonlybackground='orange')
+		caine_update.configure(text='Update', fg='blue', cursor='hand2')
+	
+	### DEFT
+	soup = BeautifulSoup(response[19].text, 'html.parser')
+	try:
+		version = soup.find('td', {'class': 'TablesInvert'}).text.strip()
+	except:
+		version = 'Error'
+		deft_latest.configure(readonlybackground='red')
+	deft_latest.configure(state='normal')
+	deft_latest.delete(0, END)
+	deft_latest.insert(0,version)
+	deft_latest.configure(state='readonly')
+	if deft_current.get() == deft_latest.get():
+		deft_latest.configure(readonlybackground='limegreen')
+		deft_update.configure(text='', cursor='')
+	elif ((deft_current.get() != '') and (deft_latest.get() != 'Error')):
+		deft_latest.configure(readonlybackground='orange')
+		deft_update.configure(text='Update', fg='blue', cursor='hand2')
+	
+	### Forensic Falcon Neo
+	soup = BeautifulSoup(response[20].text, 'html.parser')
+	try:
+		version = soup.find('table', {'class': 'datatableblue'}).findAll('tr')[2].findAll('td')[1].text.strip()
+	except:
+		version = 'Error'
+		ffn_latest.configure(readonlybackground='red')
+	ffn_latest.configure(state='normal')
+	ffn_latest.delete(0, END)
+	ffn_latest.insert(0,version)
+	ffn_latest.configure(state='readonly')
+	if ffn_current.get() == ffn_latest.get():
+		ffn_latest.configure(readonlybackground='limegreen')
+		ffn_update.configure(text='', cursor='')
+	elif ((ffn_current.get() != '') and (ffn_latest.get() != 'Error')):
+		ffn_latest.configure(readonlybackground='orange')
+		ffn_update.configure(text='Update', fg='blue', cursor='hand2')
 
 def current_save():
 	current_save.configure(text='Checking for updates...', state='disabled')
@@ -464,13 +548,16 @@ def current_save():
 	config['CURRENT']['hashcat'] = hashcat_current.get()
 	config['CURRENT']['exiftool'] = exiftool_current.get()
 	config['CURRENT']['bec'] = bec_current.get()
+	config['CURRENT']['caine'] = caine_current.get()
+	config['CURRENT']['deft'] = deft_current.get()
+	config['CURRENT']['ffn'] = ffn_current.get()
 	with open('current_versions.ini', 'w') as configfile:
 		config.write(configfile)
 	current_save.configure(text='Current versions saved', state='normal')
 	latest_update()
 
 def about_box():
-	messagebox.showinfo('About', 'Forensic Version Checker v1.2\n\nTool\'s homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\nDigital Forensics Discord:\nhttps://discord.gg/pNMZunG')
+	messagebox.showinfo('About', 'Forensic Version Checker v1.3\n\nTool\'s homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\nDigital Forensics Discord:\nhttps://discord.gg/pNMZunG')
 
 tool = Label(window, text='Tool', font=('TkDefaultFont', fontsize, 'underline'), padx=5, pady=3)
 tool.grid(column=0, row=0, sticky=W)
@@ -766,15 +853,60 @@ bec_update = Label(text='')
 bec_update.grid(column=3, row=19)
 bec_update.bind('<ButtonRelease-1>', lambda e:callback('https://belkasoft.com/get'))
 
+### CAINE
+caine = Label(window, text='CAINE', padx=5)
+caine.grid(column=0, row=20, sticky=W)
+caine_current = Entry(window, width=8)
+caine_current.grid(column=1, row=20, sticky=N+S+E+W)
+try:
+	caine_current.insert(0,config['CURRENT']['caine'])
+except:
+	caine_current.insert(0,'')
+caine_latest = Entry(window, width=8, state='readonly')
+caine_latest.grid(column=2, row=20, sticky=N+S+E+W)
+caine_update = Label(text='')
+caine_update.grid(column=3, row=20)
+caine_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.caine-live.net/'))
+
+### DEFT
+deft = Label(window, text='DEFT', padx=5)
+deft.grid(column=0, row=21, sticky=W)
+deft_current = Entry(window, width=8)
+deft_current.grid(column=1, row=21, sticky=N+S+E+W)
+try:
+	deft_current.insert(0,config['CURRENT']['deft'])
+except:
+	deft_current.insert(0,'')
+deft_latest = Entry(window, width=8, state='readonly')
+deft_latest.grid(column=2, row=21, sticky=N+S+E+W)
+deft_update = Label(text='')
+deft_update.grid(column=3, row=21)
+deft_update.bind('<ButtonRelease-1>', lambda e:callback('http://na.mirror.garr.it/mirrors/deft/zero/'))
+
+### Forensic Falcon Neo
+ffn = Label(window, text='Forensic Falcon N', padx=5)
+ffn.grid(column=0, row=22, sticky=W)
+ffn_current = Entry(window, width=8)
+ffn_current.grid(column=1, row=22, sticky=N+S+E+W)
+try:
+	ffn_current.insert(0,config['CURRENT']['ffn'])
+except:
+	ffn_current.insert(0,'')
+ffn_latest = Entry(window, width=8, state='readonly')
+ffn_latest.grid(column=2, row=22, sticky=N+S+E+W)
+ffn_update = Label(text='')
+ffn_update.grid(column=3, row=22)
+ffn_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.logicube.com/knowledge/forensic-falcon-neo/'))
+
 divider = Label(window, text='', font=('TkDefaultFont', 1, 'underline'))
-divider.grid(column=1, row=20)
+divider.grid(column=1, row=23)
 
 about = Label(window, text='?', padx=5, fg='grey', cursor='hand2')
-about.grid(column=0, row=21, sticky=W)
+about.grid(column=0, row=24, sticky=W)
 about.bind('<ButtonRelease-1>', lambda e: about_box())
 
 current_save = Button(window, text='Save', command=current_save)
-current_save.grid(column=1, row=21, columnspan=2, sticky=N+S+E+W)
+current_save.grid(column=1, row=24, columnspan=2, sticky=N+S+E+W)
 
 if first_run != True:
 	current_save.configure(text='Checking for updates...', state='disabled')
