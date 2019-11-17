@@ -23,6 +23,9 @@ Script that checks for available updates for the most commonly used Digital Fore
 - hashcat
 - ExifTool
 - Belkasoft Evidence Center
+- CAINE
+- DEFT
+- Forensic Falcon Neo
 
 If your favorite tool is missing, feel free to open an Issue and provide me with a link to that tool's website.
 
