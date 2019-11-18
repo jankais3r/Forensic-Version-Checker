@@ -14,10 +14,10 @@ window = Tk()
 window.title('Forensic Version Checker')
 
 if os.name == 'nt':
-	window.geometry('345x530')
+	window.geometry('375x570')
 	fontsize = 9
 else:
-	window.geometry('315x475')
+	window.geometry('350x515')
 	fontsize = 10
 
 
@@ -25,6 +25,7 @@ if os.path.isfile('current_versions.ini') == False:
 	default_config = """[CURRENT]
 encase = 
 blacklight = 
+macquisition = 
 axiom = 
 ufed4pc = 
 physicalanalyzer = 
@@ -45,6 +46,7 @@ bec =
 caine = 
 deft = 
 ffn = 
+fec = 
 """
 
 	configfile = open('current_versions.ini', 'w')
@@ -67,18 +69,18 @@ def latest_update():
 	}
 	
 	urls = ['https://www.guidancesoftware.com/encase-forensic',
-            'https://www.blackbagtech.com/downloads/', 
-            'https://www.magnetforensics.com/downloadaxiom/',
-            'https://www.cellebrite.com/en/support/product-releases/',
-            'https://www.osforensics.com/whatsnew.html',
-            'http://www.forensicexplorer.com/download.php',
-            'https://usbdetective.com/release-notes/',
-            'https://accessdata.com/product-download',
-            'https://www.msab.com/downloads/',
-            'https://www.x-ways.net/forensics/index-m.html',
-            'https://github.com/gchq/CyberChef/releases/latest',
-            'https://www.nist.gov/itl/ssd/software-quality-group/nsrl-download/current-rds-hash-sets',
-            'https://github.com/jankais3r/Forensic-Version-Checker/releases/latest',
+			'https://www.blackbagtech.com/downloads/',
+			'https://www.magnetforensics.com/downloadaxiom/',
+			'https://www.cellebrite.com/en/support/product-releases/',
+			'https://www.osforensics.com/whatsnew.html',
+			'http://www.forensicexplorer.com/download.php',
+			'https://usbdetective.com/release-notes/',
+			'https://accessdata.com/product-download',
+			'https://www.msab.com/downloads/',
+			'https://www.x-ways.net/forensics/index-m.html',
+			'https://github.com/gchq/CyberChef/releases/latest',
+			'https://s3.amazonaws.com/rds.nsrl.nist.gov/RDS/current/README.txt',
+			'https://github.com/jankais3r/Forensic-Version-Checker/releases/latest',
 			'https://arsenalrecon.com/downloads/',
 			'https://blog.passware.com/category/product-update/',
 			'https://hashcat.net/beta/',
@@ -86,9 +88,10 @@ def latest_update():
 			'https://belkasoft.com/becver.txt',
 			'https://distrowatch.com/table.php?distribution=caine',
 			'https://distrowatch.com/table.php?distribution=deft',
-			'https://www.logicube.com/knowledge/forensic-falcon-neo/'
-        ]
-	response = grequests.map((grequests.get(u, headers=ua_headers) for u in urls), size=3)
+			'https://www.logicube.com/knowledge/forensic-falcon-neo/',
+			'http://www.metaspike.com/fec-change-log/'
+		]
+	response = grequests.map((grequests.get(u, headers=ua_headers) for u in urls), size=5)
 	
 	### EnCase
 	soup = BeautifulSoup(response[0].text, 'html.parser')
@@ -128,6 +131,25 @@ def latest_update():
 	elif ((blacklight_current.get() != '') and (blacklight_latest.get() != 'Error')):
 		blacklight_latest.configure(readonlybackground='orange')
 		blacklight_update.configure(text='Update', fg='blue', cursor='hand2')
+	
+	### MacQuisition
+	soup = BeautifulSoup(response[1].text, 'html.parser')
+	try:
+		version = soup.find('dl', {'id': 'macquisitionrevision'}).select_one('span').text.strip()
+		version = version.replace('MacQuisition ','')
+	except:
+		version = 'Error'
+		macquisition_latest.configure(readonlybackground='red')
+	macquisition_latest.configure(state='normal')
+	macquisition_latest.delete(0, END)
+	macquisition_latest.insert(0,version)
+	macquisition_latest.configure(state='readonly')
+	if macquisition_current.get() == macquisition_latest.get():
+		macquisition_latest.configure(readonlybackground='limegreen')
+		macquisition_update.configure(text='', cursor='')
+	elif ((macquisition_current.get() != '') and (macquisition_latest.get() != 'Error')):
+		macquisition_latest.configure(readonlybackground='orange')
+		macquisition_update.configure(text='Update', fg='blue', cursor='hand2')
 	
 	### AXIOM
 	soup = BeautifulSoup(response[2].text, 'html.parser')
@@ -345,10 +367,9 @@ def latest_update():
 	### NSRL
 	soup = BeautifulSoup(response[11].text, 'html.parser')
 	try:
-		version = soup.find('div', {'class': 'tex2jax'}).select_one('h2').text.strip()
-		version = version.replace('RDS Version ','')
-		version = version.split('-')[0]
-		version = version[:-1]
+		version = soup.text.strip()
+		version = version.replace('NSRL RDS Version ','')
+		version = version.split(' ')[0]
 	except:
 		version = 'Error'
 		nsrl_latest.configure(readonlybackground='red')
@@ -369,8 +390,8 @@ def latest_update():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v','')
 	except:
-		version == '1.3'
-	if version != '1.3':
+		version == '1.4'
+	if version != '1.4':
 		about.configure(text='Update FVC', fg='blue', cursor='hand2')
 		about.bind('<ButtonRelease-1>', lambda e:callback('https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'))
 	
@@ -525,12 +546,33 @@ def latest_update():
 	elif ((ffn_current.get() != '') and (ffn_latest.get() != 'Error')):
 		ffn_latest.configure(readonlybackground='orange')
 		ffn_update.configure(text='Update', fg='blue', cursor='hand2')
+	
+	### Forensic Email Collector
+	soup = BeautifulSoup(response[21].text, 'html.parser')
+	try:
+		version = soup.select_one('h4').text.strip()
+		version = version.split(' ')[0]
+		version = version.replace('v','')
+	except:
+		version = 'Error'
+		fec_latest.configure(readonlybackground='red')
+	fec_latest.configure(state='normal')
+	fec_latest.delete(0, END)
+	fec_latest.insert(0,version)
+	fec_latest.configure(state='readonly')
+	if fec_current.get() == fec_latest.get():
+		fec_latest.configure(readonlybackground='limegreen')
+		fec_update.configure(text='', cursor='')
+	elif ((fec_current.get() != '') and (fec_latest.get() != 'Error')):
+		fec_latest.configure(readonlybackground='orange')
+		fec_update.configure(text='Update', fg='blue', cursor='hand2')
 
 def current_save():
 	current_save.configure(text='Checking for updates...', state='disabled')
 	window.update()
 	config['CURRENT']['encase'] = encase_current.get()
 	config['CURRENT']['blacklight'] = blacklight_current.get()
+	config['CURRENT']['macquisition'] = macquisition_current.get()
 	config['CURRENT']['axiom'] = axiom_current.get()
 	config['CURRENT']['ufed4pc'] = ufed4pc_current.get()
 	config['CURRENT']['physicalanalyzer'] = physicalanalyzer_current.get()
@@ -551,362 +593,421 @@ def current_save():
 	config['CURRENT']['caine'] = caine_current.get()
 	config['CURRENT']['deft'] = deft_current.get()
 	config['CURRENT']['ffn'] = ffn_current.get()
+	config['CURRENT']['fec'] = fec_current.get()
 	with open('current_versions.ini', 'w') as configfile:
 		config.write(configfile)
 	current_save.configure(text='Current versions saved', state='normal')
 	latest_update()
 
 def about_box():
-	messagebox.showinfo('About', 'Forensic Version Checker v1.3\n\nTool\'s homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\nDigital Forensics Discord:\nhttps://discord.gg/pNMZunG')
+	messagebox.showinfo('About', 'Forensic Version Checker v1.4\n\nTool\'s homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\nDigital Forensics Discord:\nhttps://discord.gg/pNMZunG')
 
+rowID = 0
 tool = Label(window, text='Tool', font=('TkDefaultFont', fontsize, 'underline'), padx=5, pady=3)
-tool.grid(column=0, row=0, sticky=W)
+tool.grid(column=0, row=rowID, sticky=W)
 current = Label(window, text='Current Version', font=('TkDefaultFont', fontsize, 'underline'), pady=3)
-current.grid(column=1, row=0)
+current.grid(column=1, row=rowID)
 latest = Label(window, text='Latest Version', font=('TkDefaultFont', fontsize, 'underline'), pady=3)
-latest.grid(column=2, row=0)
+latest.grid(column=2, row=rowID)
 latest = Label(window, text='Update', font=('TkDefaultFont', fontsize, 'underline'), pady=3)
-latest.grid(column=3, row=0)
+latest.grid(column=3, row=rowID)
+rowID += 1
 
 ### EnCase
 encase = Label(window, text='EnCase', padx=5)
-encase.grid(column=0, row=1, sticky=W)
+encase.grid(column=0, row=rowID, sticky=W)
 encase_current = Entry(window, width=8)
-encase_current.grid(column=1, row=1, sticky=N+S+E+W)
+encase_current.grid(column=rowID, row=rowID, sticky=N+S+E+W)
 try:
 	encase_current.insert(0,config['CURRENT']['encase'])
 except:
 	encase_current.insert(0,'')
 encase_latest = Entry(window, width=8, state='readonly')
-encase_latest.grid(column=2, row=1, sticky=N+S+E+W)
+encase_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 encase_update = Label(text='', padx=2)
-encase_update.grid(column=3, row=1)
+encase_update.grid(column=3, row=rowID)
 encase_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.guidancesoftware.com/encase-forensic'))
+rowID += 1
 
 ### BlackLight
 blacklight = Label(window, text='BlackLight', padx=5)
-blacklight.grid(column=0, row=2, sticky=W)
+blacklight.grid(column=0, row=rowID, sticky=W)
 blacklight_current = Entry(window, width=8)
-blacklight_current.grid(column=1, row=2, sticky=N+S+E+W)
+blacklight_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	blacklight_current.insert(0,config['CURRENT']['blacklight'])
 except:
 	blacklight_current.insert(0,'')
 blacklight_latest = Entry(window, width=8, state='readonly')
-blacklight_latest.grid(column=2, row=2, sticky=N+S+E+W)
+blacklight_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 blacklight_update = Label(text='')
-blacklight_update.grid(column=3, row=2)
+blacklight_update.grid(column=3, row=rowID)
 blacklight_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.blackbagtech.com/downloads/'))
+rowID += 1
+rowID += 1
+
+### MacQuisition
+macquisition = Label(window, text='MacQuisition', padx=5)
+macquisition.grid(column=0, row=rowID, sticky=W)
+macquisition_current = Entry(window, width=8)
+macquisition_current.grid(column=1, row=rowID, sticky=N+S+E+W)
+try:
+	macquisition_current.insert(0,config['CURRENT']['macquisition'])
+except:
+	macquisition_current.insert(0,'')
+macquisition_latest = Entry(window, width=8, state='readonly')
+macquisition_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
+macquisition_update = Label(text='')
+macquisition_update.grid(column=3, row=rowID)
+macquisition_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.blackbagtech.com/downloads/'))
+rowID += 1
 
 ### AXIOM
 axiom = Label(window, text='AXIOM', padx=5)
-axiom.grid(column=0, row=3, sticky=W)
+axiom.grid(column=0, row=rowID, sticky=W)
 axiom_current = Entry(window, width=8)
-axiom_current.grid(column=1, row=3, sticky=N+S+E+W)
+axiom_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	axiom_current.insert(0,config['CURRENT']['axiom'])
 except:
 	axiom_current.insert(0,'')
 axiom_latest = Entry(window, width=8, state='readonly')
-axiom_latest.grid(column=2, row=3, sticky=N+S+E+W)
+axiom_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 axiom_update = Label(text='')
-axiom_update.grid(column=3, row=3)
+axiom_update.grid(column=3, row=rowID)
 axiom_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.magnetforensics.com/downloadaxiom/'))
+rowID += 1
 
 ### UFED4PC
 ufed4pc = Label(window, text='UFED 4PC', padx=5)
-ufed4pc.grid(column=0, row=4, sticky=W)
+ufed4pc.grid(column=0, row=rowID, sticky=W)
 ufed4pc_current = Entry(window, width=8)
-ufed4pc_current.grid(column=1, row=4, sticky=N+S+E+W)
+ufed4pc_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	ufed4pc_current.insert(0,config['CURRENT']['ufed4pc'])
 except:
 	ufed4pc_current.insert(0,'')
 ufed4pc_latest = Entry(window, width=8, state='readonly')
-ufed4pc_latest.grid(column=2, row=4, sticky=N+S+E+W)
+ufed4pc_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 ufed4pc_update = Label(text='')
-ufed4pc_update.grid(column=3, row=4)
+ufed4pc_update.grid(column=3, row=rowID)
 ufed4pc_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.cellebrite.com/en/support/product-releases/'))
+rowID += 1
 
 ### Physical Analyzer
 physicalanalyzer = Label(window, text='Physical Analyzer', padx=5)
-physicalanalyzer.grid(column=0, row=5, sticky=W)
+physicalanalyzer.grid(column=0, row=rowID, sticky=W)
 physicalanalyzer_current = Entry(window, width=8)
-physicalanalyzer_current.grid(column=1, row=5, sticky=N+S+E+W)
+physicalanalyzer_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	physicalanalyzer_current.insert(0,config['CURRENT']['physicalanalyzer'])
 except:
 	physicalanalyzer_current.insert(0,'')
 physicalanalyzer_latest = Entry(window, width=8, state='readonly')
-physicalanalyzer_latest.grid(column=2, row=5, sticky=N+S+E+W)
+physicalanalyzer_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 physicalanalyzer_update = Label(text='')
-physicalanalyzer_update.grid(column=3, row=5)
+physicalanalyzer_update.grid(column=3, row=rowID)
 physicalanalyzer_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.cellebrite.com/en/support/product-releases/'))
+rowID += 1
 
 ### OSF
 osf = Label(window, text='OSForensics', padx=5)
-osf.grid(column=0, row=6, sticky=W)
+osf.grid(column=0, row=rowID, sticky=W)
 osf_current = Entry(window, width=8)
-osf_current.grid(column=1, row=6, sticky=N+S+E+W)
+osf_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	osf_current.insert(0,config['CURRENT']['osf'])
 except:
 	osf_current.insert(0,'')
 osf_latest = Entry(window, width=8, state='readonly')
-osf_latest.grid(column=2, row=6, sticky=N+S+E+W)
+osf_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 osf_update = Label(text='')
-osf_update.grid(column=3, row=6)
+osf_update.grid(column=3, row=rowID)
 osf_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.osforensics.com/download.html'))
+rowID += 1
 
 ### ForensicExplorer
 forensicexplorer = Label(window, text='ForensicExplorer', padx=5)
-forensicexplorer.grid(column=0, row=7, sticky=W)
+forensicexplorer.grid(column=0, row=rowID, sticky=W)
 forensicexplorer_current = Entry(window, width=8)
-forensicexplorer_current.grid(column=1, row=7, sticky=N+S+E+W)
+forensicexplorer_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	forensicexplorer_current.insert(0,config['CURRENT']['forensicexplorer'])
 except:
 	forensicexplorer_current.insert(0,'')
 forensicexplorer_latest = Entry(window, width=8, state='readonly')
-forensicexplorer_latest.grid(column=2, row=7, sticky=N+S+E+W)
+forensicexplorer_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 forensicexplorer_update = Label(text='')
-forensicexplorer_update.grid(column=3, row=7)
+forensicexplorer_update.grid(column=3, row=rowID)
 forensicexplorer_update.bind('<ButtonRelease-1>', lambda e:callback('http://www.forensicexplorer.com/download.php'))
+rowID += 1
 
 ### USB Detective
 usbdetective = Label(window, text='USB Detective', padx=5)
-usbdetective.grid(column=0, row=8, sticky=W)
+usbdetective.grid(column=0, row=rowID, sticky=W)
 usbdetective_current = Entry(window, width=8)
-usbdetective_current.grid(column=1, row=8, sticky=N+S+E+W)
+usbdetective_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	usbdetective_current.insert(0,config['CURRENT']['usbdetective'])
 except:
 	usbdetective_current.insert(0,'')
 usbdetective_latest = Entry(window, width=8, state='readonly')
-usbdetective_latest.grid(column=2, row=8, sticky=N+S+E+W)
+usbdetective_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 usbdetective_update = Label(text='')
-usbdetective_update.grid(column=3, row=8)
+usbdetective_update.grid(column=3, row=rowID)
 usbdetective_update.bind('<ButtonRelease-1>', lambda e:callback('https://usbdetective.com/release-notes/'))
+rowID += 1
 
 ### FTK
 ftk = Label(window, text='FTK', padx=5)
-ftk.grid(column=0, row=9, sticky=W)
+ftk.grid(column=0, row=rowID, sticky=W)
 ftk_current = Entry(window, width=8)
-ftk_current.grid(column=1, row=9, sticky=N+S+E+W)
+ftk_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	ftk_current.insert(0,config['CURRENT']['ftk'])
 except:
 	ftk_current.insert(0,'')
 ftk_latest = Entry(window, width=8, state='readonly')
-ftk_latest.grid(column=2, row=9, sticky=N+S+E+W)
+ftk_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 ftk_update = Label(text='')
-ftk_update.grid(column=3, row=9)
+ftk_update.grid(column=3, row=rowID)
 ftk_update.bind('<ButtonRelease-1>', lambda e:callback('https://accessdata.com/product-download'))
+rowID += 1
 
 ### FTK Imager
 ftkimager = Label(window, text='FTK Imager', padx=5)
-ftkimager.grid(column=0, row=10, sticky=W)
+ftkimager.grid(column=0, row=rowID, sticky=W)
 ftkimager_current = Entry(window, width=8)
-ftkimager_current.grid(column=1, row=10, sticky=N+S+E+W)
+ftkimager_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	ftkimager_current.insert(0,config['CURRENT']['ftkimager'])
 except:
 	ftkimager_current.insert(0,'')
 ftkimager_latest = Entry(window, width=8, state='readonly')
-ftkimager_latest.grid(column=2, row=10, sticky=N+S+E+W)
+ftkimager_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 ftkimager_update = Label(text='')
-ftkimager_update.grid(column=3, row=10)
+ftkimager_update.grid(column=3, row=rowID)
 ftkimager_update.bind('<ButtonRelease-1>', lambda e:callback('https://accessdata.com/product-download'))
+rowID += 1
 
 ### XAMN
 xamn = Label(window, text='XAMN', padx=5)
-xamn.grid(column=0, row=11, sticky=W)
+xamn.grid(column=0, row=rowID, sticky=W)
 xamn_current = Entry(window, width=8)
-xamn_current.grid(column=1, row=11, sticky=N+S+E+W)
+xamn_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	xamn_current.insert(0,config['CURRENT']['xamn'])
 except:
 	xamn_current.insert(0,'')
 xamn_latest = Entry(window, width=8, state='readonly')
-xamn_latest.grid(column=2, row=11, sticky=N+S+E+W)
+xamn_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 xamn_update = Label(text='')
-xamn_update.grid(column=3, row=11)
+xamn_update.grid(column=3, row=rowID)
 xamn_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.msab.com/downloads/'))
+rowID += 1
 
 ### X-Ways
 xways = Label(window, text='X-Ways', padx=5)
-xways.grid(column=0, row=12, sticky=W)
+xways.grid(column=0, row=rowID, sticky=W)
 xways_current = Entry(window, width=8)
-xways_current.grid(column=1, row=12, sticky=N+S+E+W)
+xways_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	xways_current.insert(0,config['CURRENT']['xways'])
 except:
 	xways_current.insert(0,'')
 xways_latest = Entry(window, width=8, state='readonly')
-xways_latest.grid(column=2, row=12, sticky=N+S+E+W)
+xways_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 xways_update = Label(text='')
-xways_update.grid(column=3, row=12)
+xways_update.grid(column=3, row=rowID)
 xways_update.bind('<ButtonRelease-1>', lambda e:callback('http://www.x-ways.net/winhex/license.html'))
+rowID += 1
 
 ### CyberChef
 cyberchef = Label(window, text='CyberChef', padx=5)
-cyberchef.grid(column=0, row=13, sticky=W)
+cyberchef.grid(column=0, row=rowID, sticky=W)
 cyberchef_current = Entry(window, width=8)
-cyberchef_current.grid(column=1, row=13, sticky=N+S+E+W)
+cyberchef_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	cyberchef_current.insert(0,config['CURRENT']['cyberchef'])
 except:
 	cyberchef_current.insert(0,'')
 cyberchef_latest = Entry(window, width=8, state='readonly')
-cyberchef_latest.grid(column=2, row=13, sticky=N+S+E+W)
+cyberchef_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 cyberchef_update = Label(text='')
-cyberchef_update.grid(column=3, row=13)
+cyberchef_update.grid(column=3, row=rowID)
 cyberchef_update.bind('<ButtonRelease-1>', lambda e:callback('https://github.com/gchq/CyberChef/releases/latest'))
+rowID += 1
 
 ### NSRL
 nsrl = Label(window, text='NSRL hash set', padx=5)
-nsrl.grid(column=0, row=14, sticky=W)
+nsrl.grid(column=0, row=rowID, sticky=W)
 nsrl_current = Entry(window, width=8)
-nsrl_current.grid(column=1, row=14, sticky=N+S+E+W)
+nsrl_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	nsrl_current.insert(0,config['CURRENT']['nsrl'])
 except:
 	nsrl_current.insert(0,'')
 nsrl_latest = Entry(window, width=8, state='readonly')
-nsrl_latest.grid(column=2, row=14, sticky=N+S+E+W)
+nsrl_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 nsrl_update = Label(text='')
-nsrl_update.grid(column=3, row=14)
-nsrl_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.nist.gov/itl/ssd/software-quality-group/nsrl-download/current-rds-hash-sets'))
+nsrl_update.grid(column=3, row=rowID)
+nsrl_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.nist.gov/itl/ssd/software-quality-group/national-software-reference-library-nsrl/nsrl-download/current-rds'))
+rowID += 1
 
 ### Arsenal Image Mounter
 aim = Label(window, text='AIM', padx=5)
-aim.grid(column=0, row=15, sticky=W)
+aim.grid(column=0, row=rowID, sticky=W)
 aim_current = Entry(window, width=8)
-aim_current.grid(column=1, row=15, sticky=N+S+E+W)
+aim_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	aim_current.insert(0,config['CURRENT']['aim'])
 except:
 	aim_current.insert(0,'')
 aim_latest = Entry(window, width=8, state='readonly')
-aim_latest.grid(column=2, row=15, sticky=N+S+E+W)
+aim_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 aim_update = Label(text='')
-aim_update.grid(column=3, row=15)
+aim_update.grid(column=3, row=rowID)
 aim_update.bind('<ButtonRelease-1>', lambda e:callback('https://arsenalrecon.com/downloads/'))
+rowID += 1
 
 ### Passware
 passware = Label(window, text='Passware', padx=5)
-passware.grid(column=0, row=16, sticky=W)
+passware.grid(column=0, row=rowID, sticky=W)
 passware_current = Entry(window, width=8)
-passware_current.grid(column=1, row=16, sticky=N+S+E+W)
+passware_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	passware_current.insert(0,config['CURRENT']['passware'])
 except:
 	passware_current.insert(0,'')
 passware_latest = Entry(window, width=8, state='readonly')
-passware_latest.grid(column=2, row=16, sticky=N+S+E+W)
+passware_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 passware_update = Label(text='')
-passware_update.grid(column=3, row=16)
+passware_update.grid(column=3, row=rowID)
 passware_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.passware.com/kit-forensic/whatsnew/'))
+rowID += 1
 
 ### hashcat
 hashcat = Label(window, text='hashcat', padx=5)
-hashcat.grid(column=0, row=17, sticky=W)
+hashcat.grid(column=0, row=rowID, sticky=W)
 hashcat_current = Entry(window, width=8)
-hashcat_current.grid(column=1, row=17, sticky=N+S+E+W)
+hashcat_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	hashcat_current.insert(0,config['CURRENT']['hashcat'])
 except:
 	hashcat_current.insert(0,'')
 hashcat_latest = Entry(window, width=8, state='readonly')
-hashcat_latest.grid(column=2, row=17, sticky=N+S+E+W)
+hashcat_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 hashcat_update = Label(text='')
-hashcat_update.grid(column=3, row=17)
+hashcat_update.grid(column=3, row=rowID)
 hashcat_update.bind('<ButtonRelease-1>', lambda e:callback('https://hashcat.net/hashcat/'))
+rowID += 1
 
 ### ExifTool
 exiftool = Label(window, text='ExifTool', padx=5)
-exiftool.grid(column=0, row=18, sticky=W)
+exiftool.grid(column=0, row=rowID, sticky=W)
 exiftool_current = Entry(window, width=8)
-exiftool_current.grid(column=1, row=18, sticky=N+S+E+W)
+exiftool_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	exiftool_current.insert(0,config['CURRENT']['exiftool'])
 except:
 	exiftool_current.insert(0,'')
 exiftool_latest = Entry(window, width=8, state='readonly')
-exiftool_latest.grid(column=2, row=18, sticky=N+S+E+W)
+exiftool_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 exiftool_update = Label(text='')
-exiftool_update.grid(column=3, row=18)
+exiftool_update.grid(column=3, row=rowID)
 exiftool_update.bind('<ButtonRelease-1>', lambda e:callback('https://owl.phy.queensu.ca/~phil/exiftool/'))
+rowID += 1
 
 ### Belkasoft Evidence Center
 bec = Label(window, text='BEC', padx=5)
-bec.grid(column=0, row=19, sticky=W)
+bec.grid(column=0, row=rowID, sticky=W)
 bec_current = Entry(window, width=8)
-bec_current.grid(column=1, row=19, sticky=N+S+E+W)
+bec_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	bec_current.insert(0,config['CURRENT']['bec'])
 except:
 	bec_current.insert(0,'')
 bec_latest = Entry(window, width=8, state='readonly')
-bec_latest.grid(column=2, row=19, sticky=N+S+E+W)
+bec_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 bec_update = Label(text='')
-bec_update.grid(column=3, row=19)
+bec_update.grid(column=3, row=rowID)
 bec_update.bind('<ButtonRelease-1>', lambda e:callback('https://belkasoft.com/get'))
+rowID += 1
 
 ### CAINE
 caine = Label(window, text='CAINE', padx=5)
-caine.grid(column=0, row=20, sticky=W)
+caine.grid(column=0, row=rowID, sticky=W)
 caine_current = Entry(window, width=8)
-caine_current.grid(column=1, row=20, sticky=N+S+E+W)
+caine_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	caine_current.insert(0,config['CURRENT']['caine'])
 except:
 	caine_current.insert(0,'')
 caine_latest = Entry(window, width=8, state='readonly')
-caine_latest.grid(column=2, row=20, sticky=N+S+E+W)
+caine_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 caine_update = Label(text='')
-caine_update.grid(column=3, row=20)
+caine_update.grid(column=3, row=rowID)
 caine_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.caine-live.net/'))
+rowID += 1
 
 ### DEFT
 deft = Label(window, text='DEFT', padx=5)
-deft.grid(column=0, row=21, sticky=W)
+deft.grid(column=0, row=rowID, sticky=W)
 deft_current = Entry(window, width=8)
-deft_current.grid(column=1, row=21, sticky=N+S+E+W)
+deft_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	deft_current.insert(0,config['CURRENT']['deft'])
 except:
 	deft_current.insert(0,'')
 deft_latest = Entry(window, width=8, state='readonly')
-deft_latest.grid(column=2, row=21, sticky=N+S+E+W)
+deft_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 deft_update = Label(text='')
-deft_update.grid(column=3, row=21)
+deft_update.grid(column=3, row=rowID)
 deft_update.bind('<ButtonRelease-1>', lambda e:callback('http://na.mirror.garr.it/mirrors/deft/zero/'))
+rowID += 1
 
 ### Forensic Falcon Neo
-ffn = Label(window, text='Forensic Falcon N', padx=5)
-ffn.grid(column=0, row=22, sticky=W)
+ffn = Label(window, text='Forensic Falcon Neo', padx=5)
+ffn.grid(column=0, row=rowID, sticky=W)
 ffn_current = Entry(window, width=8)
-ffn_current.grid(column=1, row=22, sticky=N+S+E+W)
+ffn_current.grid(column=1, row=rowID, sticky=N+S+E+W)
 try:
 	ffn_current.insert(0,config['CURRENT']['ffn'])
 except:
 	ffn_current.insert(0,'')
 ffn_latest = Entry(window, width=8, state='readonly')
-ffn_latest.grid(column=2, row=22, sticky=N+S+E+W)
+ffn_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 ffn_update = Label(text='')
-ffn_update.grid(column=3, row=22)
+ffn_update.grid(column=3, row=rowID)
 ffn_update.bind('<ButtonRelease-1>', lambda e:callback('https://www.logicube.com/knowledge/forensic-falcon-neo/'))
+rowID += 1
 
-divider = Label(window, text='', font=('TkDefaultFont', 1, 'underline'))
-divider.grid(column=1, row=23)
+### Forensic Email Collector
+fec = Label(window, text='Forensic Email Collector', padx=5)
+fec.grid(column=0, row=rowID, sticky=W)
+fec_current = Entry(window, width=8)
+fec_current.grid(column=1, row=rowID, sticky=N+S+E+W)
+try:
+	fec_current.insert(0,config['CURRENT']['fec'])
+except:
+	fec_current.insert(0,'')
+fec_latest = Entry(window, width=8, state='readonly')
+fec_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
+fec_update = Label(text='')
+fec_update.grid(column=3, row=rowID)
+fec_update.bind('<ButtonRelease-1>', lambda e:callback('http://www.metaspike.com/fec-change-log/'))
+rowID += 1
+
+divider = Label(window, text='', font=('TkDefaultFont', 1))
+divider.grid(column=1, row=rowID)
+rowID += 1
 
 about = Label(window, text='?', padx=5, fg='grey', cursor='hand2')
-about.grid(column=0, row=24, sticky=W)
+about.grid(column=0, row=rowID, sticky=W)
 about.bind('<ButtonRelease-1>', lambda e: about_box())
 
 current_save = Button(window, text='Save', command=current_save)
-current_save.grid(column=1, row=24, columnspan=2, sticky=N+S+E+W)
+current_save.grid(column=1, row=rowID, columnspan=2, sticky=N+S+E+W)
 
 if first_run != True:
 	current_save.configure(text='Checking for updates...', state='disabled')
