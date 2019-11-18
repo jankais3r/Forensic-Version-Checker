@@ -6,8 +6,9 @@ Script that checks for available updates for the most commonly used Digital Fore
 ## Supported tools
 - EnCase
 - BlackLight
+- MacQuisition
 - AXIOM
-- UFED4PC
+- UFED 4PC
 - Physical Analyzer
 - OSForensics
 - ForensicExplorer
@@ -26,6 +27,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - CAINE
 - DEFT
 - Forensic Falcon Neo
+- Forensic Email Collector
 
 If your favorite tool is missing, feel free to open an Issue and provide me with a link to that tool's website.
 
