@@ -3,6 +3,10 @@ Script that checks for available updates for the most commonly used Digital Fore
 
 ![FVC screenshot](https://github.com/jankais3r/Forensic-Version-Checker/blob/master/screen.png)
 
+
+![CLI interface](https://github.com/jankais3r/Forensic-Version-Checker/blob/master/cli.png)
+FVC v1.5+ also comes with a command line interface. In this mode, the tools you don't use are not being reported.
+
 ## Supported tools
 - EnCase
 - BlackLight
@@ -27,6 +31,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - CAINE
 - DEFT
 - Forensic Falcon Neo
+- Atola TaskForce
 - Forensic Email Collector
 
 If your favorite tool is missing, feel free to open an Issue and provide me with a link to that tool's website.
