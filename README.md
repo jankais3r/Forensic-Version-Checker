@@ -33,6 +33,7 @@ FVC v1.5+ also comes with a command line interface. In this mode, the tools you 
 - Forensic Falcon Neo
 - Atola TaskForce
 - Forensic Email Collector
+- VeraCrypt
 
 If your favorite tool is missing, feel free to open an Issue and provide me with a link to that tool's website.
 
