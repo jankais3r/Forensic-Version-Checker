@@ -4,14 +4,22 @@
 import os
 import time
 import queue
-import grequests
+import base64
 import webbrowser
 import configparser
 from tkinter import *
 from threading import Thread
-from bs4 import BeautifulSoup
 from tkinter import messagebox
-
+try:
+	import grequests
+except:
+	print('Install qrequests with "pip3 install grequests"')
+	quit()
+try:
+	from bs4 import BeautifulSoup
+except:
+	print('Install BeautifulSoup with "pip3 install beautifulsoup4"')
+	quit()
 
 if os.path.isfile('current_versions.ini') == False:
 	default_config = """[CURRENT]
@@ -41,6 +49,7 @@ deft =
 ffn = 
 atola = 
 fec = 
+veracrypt = 
 """
 
 	configfile = open('current_versions.ini', 'w')
@@ -82,7 +91,8 @@ def crawl():
 			'https://distrowatch.com/table.php?distribution=deft',
 			'https://www.logicube.com/knowledge/forensic-falcon-neo/',
 			'https://atola.com/products/taskforce/download.html',
-			'http://www.metaspike.com/fec-change-log/'
+			'http://www.metaspike.com/fec-change-log/',
+			'https://www.veracrypt.fr/en/Downloads.html'
 		]
 	mt_queue.put(grequests.map((grequests.get(u, headers=ua_headers) for u in urls), size=5))
 
@@ -90,8 +100,19 @@ def latest_update():
 	thread = Thread(target=crawl)
 	thread.start()
 	while(thread.is_alive()):
-		time.sleep(0.1)
+		current_save.configure(text='Checking for updates·..')
 		window.update()
+		time.sleep(0.15)
+		current_save.configure(text='Checking for updates.·.')
+		window.update()
+		time.sleep(0.15)
+		current_save.configure(text='Checking for updates..·')
+		window.update()
+		time.sleep(0.15)
+		current_save.configure(text='Checking for updates...')
+		for _ in range(10):
+			window.update()
+			time.sleep(0.15)
 		
 	response = mt_queue.get()
 	
@@ -393,8 +414,8 @@ def latest_update():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v','')
 	except:
-		version == '1.5'
-	if version != '1.5':
+		version == '1.6'
+	if version != '1.6':
 		about.configure(text='Update FVC', fg='blue', cursor='hand2')
 		about.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new('https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'))
 	
@@ -588,6 +609,26 @@ def latest_update():
 	elif ((fec_current.get() != '') and (fec_latest.get() != 'Error')):
 		fec_latest.configure(readonlybackground='orange')
 		fec_update.configure(text='Update', fg='blue', cursor='hand2')
+	
+	### VeraCrypt
+	try:
+		soup = BeautifulSoup(response[23].text, 'html.parser')
+		version = soup.select_one('h3').text.strip()
+		version = version.replace('Latest Stable Release - ','')
+		version = version.split(' ')[0]
+	except:
+		version = 'Error'
+		veracrypt_latest.configure(readonlybackground='red')
+	veracrypt_latest.configure(state='normal')
+	veracrypt_latest.delete(0, END)
+	veracrypt_latest.insert(0,version)
+	veracrypt_latest.configure(state='readonly')
+	if veracrypt_current.get() == veracrypt_latest.get():
+		veracrypt_latest.configure(readonlybackground='limegreen')
+		veracrypt_update.configure(text='', cursor='')
+	elif ((veracrypt_current.get() != '') and (veracrypt_latest.get() != 'Error')):
+		veracrypt_latest.configure(readonlybackground='orange')
+		veracrypt_update.configure(text='Update', fg='blue', cursor='hand2')
 		
 def cli_update():
 	thread = Thread(target=crawl)
@@ -607,7 +648,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['encase']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('Encase				'+current+'			'+version)
 			else:
 				print('Encase				'+current+'			'+version+'			Update available!')
@@ -625,7 +666,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['blacklight']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('BlackLight			'+current+'			'+version)
 			else:
 				print('BlackLight			'+current+'			'+version+'			Update available!')
@@ -643,7 +684,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['macquisition']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('MacQuisition			'+current+'		'+version)
 			else:
 				print('MacQuisition			'+current+'		'+version+'		Update available!')
@@ -661,7 +702,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['axiom']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('AXIOM				'+current+'		'+version)
 			else:
 				print('AXIOM				'+current+'		'+version+'		Update available!')
@@ -679,7 +720,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['ufed4pc']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('UFED 4PC			'+current+'			'+version)
 			else:
 				print('UFED 4PC			'+current+'			'+version+'			Update available!')
@@ -697,7 +738,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['physicalanalyzer']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('Physical Analyzer		'+current+'			'+version)
 			else:
 				print('Physical Analyzer		'+current+'			'+version+'			Update available!')
@@ -717,7 +758,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['osf']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('OSForensics			'+current+'		'+version)
 			else:
 				print('OSForensics			'+current+'		'+version+'		Update available!')
@@ -736,7 +777,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['forensicexplorer']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('ForensicExplorer		'+current+'		'+version)
 			else:
 				print('ForensicExplorer		'+current+'		'+version+'		Update available!')
@@ -755,7 +796,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['usbdetective']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('USB Detective			'+current+'			'+version)
 			else:
 				print('USB Detective			'+current+'			'+version+'			Update available!')
@@ -773,7 +814,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['ftk']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('FTK				'+current+'			'+version)
 			else:
 				print('FTK				'+current+'			'+version+'			Update available!')
@@ -791,7 +832,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['ftkimager']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('FTK Imager			'+current+'			'+version)
 			else:
 				print('FTK Imager			'+current+'			'+version+'			Update available!')
@@ -809,7 +850,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['xamn']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('XAMN				'+current+'			'+version)
 			else:
 				print('XAMN				'+current+'			'+version+'			Update available!')
@@ -827,7 +868,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['xways']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('X-Ways				'+current+'			'+version)
 			else:
 				print('X-Ways				'+current+'			'+version+'			Update available!')
@@ -845,7 +886,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['cyberchef']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('CyberChef			'+current+'			'+version)
 			else:
 				print('CyberChef			'+current+'			'+version+'			Update available!')
@@ -864,7 +905,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['nsrl']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('NSRL				'+current+'			'+version)
 			else:
 				print('NSRL				'+current+'			'+version+'			Update available!')
@@ -883,7 +924,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['aim']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('AIM				'+current+'			'+version)
 			else:
 				print('AIM				'+current+'			'+version+'			Update available!')
@@ -902,7 +943,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['passware']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('Passware			'+current+'			'+version)
 			else:
 				print('Passware			'+current+'			'+version+'			Update available!')
@@ -922,7 +963,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['hashcat']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('hashcat				'+current+'		'+version)
 			else:
 				print('hashcat				'+current+'		'+version+'		Update available!')
@@ -940,7 +981,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['exiftool']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('ExifTool			'+current+'			'+version)
 			else:
 				print('ExifTool			'+current+'			'+version+'			Update available!')
@@ -957,7 +998,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['bec']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('BEC				'+current+'		'+version)
 			else:
 				print('BEC				'+current+'		'+version+'		Update available!')
@@ -974,7 +1015,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['caine']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('CAINE				'+current+'			'+version)
 			else:
 				print('CAINE				'+current+'			'+version+'			Update available!')
@@ -991,7 +1032,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['deft']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('DEFT				'+current+'			'+version)
 			else:
 				print('DEFT				'+current+'			'+version+'			Update available!')
@@ -1008,7 +1049,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['ffn']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('Forensic Falcon Neo		'+current+'			'+version)
 			else:
 				print('Forensic Falcon Neo		'+current+'			'+version+'			Update available!')
@@ -1026,7 +1067,7 @@ def cli_update():
 	try:
 		current = config['CURRENT']['atola']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('Atola TaskForce			'+current+'			'+version)
 			else:
 				print('Atola TaskForce			'+current+'			'+version+'			Update available!')
@@ -1045,23 +1086,41 @@ def cli_update():
 	try:
 		current = config['CURRENT']['fec']
 		if (current != ''):
-			if (current == version):
+			if ((current == version) or (version == 'Error')):
 				print('Forensic Email Collector	'+current+'		'+version)
 			else:
 				print('Forensic Email Collector	'+current+'		'+version+'		Update available!')
 	except:
 		pass
+	
+	
+	### VeraCrypt
+	try:
+		soup = BeautifulSoup(response[23].text, 'html.parser')
+		version = soup.select_one('h3').text.strip()
+		version = version.replace('Latest Stable Release - ','')
+		version = version.split(' ')[0]
+	except:
+		version = 'Error'
+	try:
+		current = config['CURRENT']['veracrypt']
+		if (current != ''):
+			if ((current == version) or (version == 'Error')):
+				print('VeraCrypt			'+current+'		'+version)
+			else:
+				print('VeraCrypt			'+current+'		'+version+'		Update available!')
+	except:
+		pass
 		
-	
-	
+		
 	### Forensic Version Checker
 	try:
 		soup = BeautifulSoup(response[12].text, 'html.parser')
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v','')
 	except:
-		version == '1.5'
-	if (version == '1.5'):
+		version == '1.6'
+	if (version == '1.6'):
 		pass
 	else:
 		print('')
@@ -1094,6 +1153,7 @@ def current_save():
 	config['CURRENT']['ffn'] = ffn_current.get()
 	config['CURRENT']['atola'] = atola_current.get()
 	config['CURRENT']['fec'] = fec_current.get()
+	config['CURRENT']['veracrypt'] = veracrypt_current.get()
 	with open('current_versions.ini', 'w') as configfile:
 		config.write(configfile)
 	current_save.configure(text='Checking for updates...', state='disabled')
@@ -1103,7 +1163,7 @@ def current_save():
 	gui_toggle.configure(state='normal')
 
 def about_box():
-	messagebox.showinfo('About', 'Forensic Version Checker v1.5\n\n\
+	messagebox.showinfo('About', 'Forensic Version Checker v1.6\n\n\
 Tool\'s homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\n\
 Digital Forensics Discord:\nhttps://discord.gg/pNMZunG')
 
@@ -1119,6 +1179,36 @@ except:
 if gui == True:
 	window = Tk()
 	window.title('Forensic Version Checker')
+	
+	icon = 'iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAACYVBMVEUAAAAA/wCA/4BV/1WA/0Bm/zOA/1Vt/0mA/0Bx/zmA/010/0aA/0B2/zuA/0l3/0SA/0B4/zyA\
+/0d5/0OA/0B5/z2A80Z69EOA9EB69T2A9UV79kKA9kB79j5790KA90B89z6A+ER8+EKA+EB8+D55+EN8+EF8+T55+UN9+UF6+UB9+T56+UN9+kF6+kB9+j57+kB9+kN9+kF9+0N7\
++0J9+0F7+0B7+0J9+0F890B+90N890J8+EB8+EJ++EF8+EB8+EF8+EB7+EJ8+EF7+UF7+UJ8+UF7+UF8+UB7+UJ9+UB9+UF7+UB9+UB7+kJ9+kF7+kB9+kB9+kF9+kB9+kF8+kB8\
++kJ9+kF9+EJ7+EF8+EB7+EJ7+UF7+UJ7+UF8+UB8+UF7+UF8+UJ9+UF8+UF9+UB8+UJ9+UF8+UF9+UB8+UJ9+UF8+UF8+kJ9+kF8+kJ9+kF8+kF8+kF7+EF8+EF8+EF8+EF7+EJ8\
++UF8+UF8+UF8+UF8+UJ8+UF8+UF8+UF8+UF9+UF8+UJ9+UF8+UF9+UB8+UJ9+UF8+UF9+UB8+UJ9+UF8+UF7+UB7+UF8+UF7+kB8+kF8+kF8+kF8+EF8+EF8+EB8+EF8+EF8+UF8\
++UB8+UF8+UF8+UB8+UF8+UF8+UJ8+UF8+UJ8+UF8+UJ9+UF9+UF8+UJ7+UF8+UF8+UF8+UF8+UF8+UF8+UF8+UF8+UF8+UF8+kF8+kF8+EF8+EF8+UF8+UF8+UF8+UF8+UF8+UF8\
++UF8+UF8+UF8+UF8+UF8+UF8+UF8+UF8+UF8+UF8+UF8+UF8+UF8+UH////fFht9AAAAyXRSTlMAAQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0fICEiIyQlJicpKissLS4v\
+MDE0NTc5Ojs8Pj9AQUJERkdISkxNTk9RUlNUVVhaW1xdXl9gYmRmZ2lqbG5vdHZ4ent9foCBgoOEhYaHiImKjI2QkZKUlZaYmpueoKGio6Slpqiqq6ytrq+wsbKztLW2uLm6u72/\
+wMHCw8TFxsfIyszNzs/S1NbX2drb3uDh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f64aNKjAAAAAWJLR0TK87Q25gAABpZJREFUeNrt3ftbFFUcgPGDiBCYJYoX1LTI1Mgi\
+8VqYpamtaBkqFmmlppVZKUqS2R0ttQumdvFuIKUIKpmCmAsLLHz/q37QeQR2Z+bMsFxm531/dZ+zZz8unOXszlmliIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIj6p0ETcvIC\
+cV9ezoRBPZWate1si/ikljMf5LqXSll7XnxWZWGKux+/VVfFh10pcPHj+PBJ8WnHJzq1eu6m+Lb6PGdWi1vEx4VedGK1JCy+rvV5favs2+Lzbk3VtUqrFN9XkaqJVYyVyMd6VtPD\
+UIm0Pa6FdQApEZH9OlaTO4ASEWnP0sB6H6c7bdbAqoLp7h/V9lYTUTIab4u1DCSjgC3WJpCMNthi7QHJqNQW6zuQjPbZYpWDZFRui3UYJKPDYIEFFlhggQUWWGCBBRZYYPVb7XV/\
+nq0JgWVfcOcLDyqlVOqiT0NgWT+pPsq4N5Xxxe1gmVf7TNfJzK0Gy6xj6d1nM/wXsKL3eXLkdAaXgBWtjQlRJ1TUDlb3Wl41m9FLTWB1reFZ8ynl/gNW5/561PJj5ufButdvI6wn\
+lX4ULKMvk+1mNWQvWJbLYJcSNnaAJdJaoPdR15UtYN3UvvZj1r9+x7o4Tf9ahqwqf2OdGuPkKpkRv/oZa3+as+uvkr/wL5bOMth9UfQpVusqNxfYFrT6Eatxvrsrt/Ma/IdVne32\
+OvdpF/2GdXqs+1MBxpzyF9b3aaoHpXzlJ6ztiT07m6NvFsUBgdW2uueHvqxq8wdW44JYHJEzv9EPWJeeiM2BQtnV8Y91JjNWxy9lno53rINDY3dYVdqB+MYqTlQxLHFHHGO1F8X6\
+JLSicLxiBRfH/ty4BbfiE+vq071xyt70mnjEOjeud84kHHc2/rB+uL+3TnAceijesHYN7r3zLhN3xhVW7JfBvvhYUv9gNS1VvdySYLxg1c1Qvd6MuvjAqpyk+qBJlfGA9cdIvf28\
+BOf/0qWRv3sfq0RvGUwtu890E7lM70i5mH9Wt6+xdJfB0SfFHEtOju6XRbGPsXQ/TpRVJVZYUpWlN05s34HtW6zmhXqPcfZ1scaS67P1RloU8ipWWHOXIT8kdlgSytcba2nYo1hv\
+az28Qdvv3NoaS2S73mnaG72J9XeSzoMbYpxBZYcle4ZojXfBk1haH5JJPyK6WHIkXWfENV7ECursyUy59zywx5ILUzSGHNbkQax9Gg9s5jVxgiXXZmoMesCDWBrHfK7p/B68Dpa0\
+rbEf9T0PYq3WXQadYOksioUexFppc0dJpeIGS0rtFtkCD2Kts76fUSfEHZacGGU98psexNrhcPtJG8tug2yXB7GqrO5lXr24x5L6eVZjX/AgljxifieBKK+FHGBJk8VJvo958hV8\
+senW59Zol8M5wZKOrabbpyWexAqabNkl7Y56c0dYIrtNFsWxzd7cdTgU9X8/47jEAkuOZ0R91v7o1c2/aC+3J1ZIbLCkItp3eq317E5peHnE8HNvSKyw5MbciNuuCHsWS1q6r1oB\
+83eOnWNJsPvwyzy8By8iJZ3fxkr70OKqcBdY0rGt85UaaZ94/X3DmjeGGRtNRZetbugGS6T2dWP4B9ZdFq9jiQR/Xh8I5L97yGZTzh2WSPDglvxAYH157D8aMoBPOXKL1XuBBRZY\
+YIEFFlhggQUWWGCBBRZYYIEFFlhggQUWWGCBBRZYYIEFFlhggQUWWGCBBRZYYIEFFlhggQUWWGCBBRZYYIEFFlhggRUfWKZf4pcKVkQZpidtgRXRk2YzegqsiJabzehlsCL62mxG\
+34IV0X8my2FqEKzICqNP6DUBK7L6qOvh2Eawov7WinJea2KZgBW1zyKOckvYK2CZPbeGd51M+jcClmmXlnc69zBpRY2AZVX1pjlDlFIqec6mS/08lYGPJSKh2nPnakP9Pw9PYA2U\
+wAILLLDAAovAAgsssMDyLVY5SEbltlj7QTIqs8XaA5JRqS3WBpCM3rLFWgaSUcAWKxOku3VofC96FUx3qrS34peW/q8spSaFcRIRaXtIA4sXD7ovHJRSakorUiItk7WwYvfdwl7u\
+HT0rlVaJVUWqJpbKvu13q1tTlXbzmv1t1TxHOWhRk5+tgguVo2bX+dfqSq5y2Bjf7gL+NFo5LuGVq758Wq1QrkpZe953fzwXpijXzdpyrMEvUA1HN+eqnpaZk+eDcjIVERERERER\
+EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://thenounproject.com/term/update/2827723/
+	icon = base64.b64decode(icon)
+	icon = PhotoImage(data=icon)
+	window.tk.call('wm', 'iconphoto', window._w, icon)
 	
 	if os.name == 'nt':
 		fontsize = 9
@@ -1422,7 +1512,7 @@ if gui == True:
 	hashcat_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
 	hashcat_update = Label(text='')
 	hashcat_update.grid(column=3, row=rowID, padx=(0,10))
-	hashcat_update.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new('https://hashcat.net/hashcat/'))
+	hashcat_update.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new('https://hashcat.net/beta/'))
 	rowID += 1
 	
 	### ExifTool
@@ -1537,12 +1627,28 @@ if gui == True:
 	fec_update.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new('http://www.metaspike.com/fec-change-log/'))
 	rowID += 1
 	
+	### VeraCrypt
+	veracrypt = Label(window, text='VeraCrypt', padx=5)
+	veracrypt.grid(column=0, row=rowID, sticky=W)
+	veracrypt_current = Entry(window, width=8)
+	veracrypt_current.grid(column=1, row=rowID, sticky=N+S+E+W)
+	try:
+		veracrypt_current.insert(0,config['CURRENT']['veracrypt'])
+	except:
+		veracrypt_current.insert(0,'')
+	veracrypt_latest = Entry(window, width=8, state='readonly')
+	veracrypt_latest.grid(column=2, row=rowID, sticky=N+S+E+W)
+	veracrypt_update = Label(text='')
+	veracrypt_update.grid(column=3, row=rowID, padx=(0,10))
+	veracrypt_update.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new('https://www.veracrypt.fr/en/Downloads.html'))
+	rowID += 1
+	
 	about = Label(window, text='?', padx=5, fg='grey', cursor='hand2')
 	about.grid(column=0, row=rowID, sticky=W, pady=(7,7))
 	about.bind('<ButtonRelease-1>', lambda e: about_box())
 	
 	gui_option = StringVar()
-	gui_toggle = Checkbutton(window, text=' GUI?  ', variable=gui_option, onvalue='1', offvalue='0')
+	gui_toggle = Checkbutton(window, text='GUI?  ', variable=gui_option, onvalue='1', offvalue='0')
 	gui_toggle.grid(column=0, row=rowID, sticky=E, pady=(7,7))
 	gui_toggle.select()
 	
