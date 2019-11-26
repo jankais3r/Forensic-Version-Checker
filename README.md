@@ -5,7 +5,6 @@ Script that checks for available updates for the most commonly used Digital Fore
 
 
 ![CLI interface](https://github.com/jankais3r/Forensic-Version-Checker/blob/master/cli.png)
-FVC v1.5+ also comes with a command line interface. In this mode, the tools you don't use are not being reported.
 
 ## Supported tools
 - EnCase
@@ -34,11 +33,17 @@ FVC v1.5+ also comes with a command line interface. In this mode, the tools you 
 - Atola TaskForce
 - Forensic Email Collector
 - VeraCrypt
+- Autopsy
+- The Sleuth Kit
+- Mount Image Pro
+- NetAnalysis
+- HstEx
 
 If your favorite tool is missing, feel free to open an Issue and provide me with a link to that tool's website.
 
 ## Dependencies
 ```
+pip3 install tabulate
 pip3 install grequests
 pip3 install beautifulsoup4
 ```
