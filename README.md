@@ -7,37 +7,38 @@ Script that checks for available updates for the most commonly used Digital Fore
 ![CLI interface](https://github.com/jankais3r/Forensic-Version-Checker/blob/master/cli.png)
 
 ## Supported tools
-- EnCase
-- BlackLight
-- MacQuisition
+- Arsenal Image Mounter
+- Atola TaskForce
+- Autopsy
 - AXIOM
-- UFED 4PC
-- Physical Analyzer
-- OSForensics
-- ForensicExplorer
-- USB Detective
+- Belkasoft Evidence Center
+- BlackLight
+- CAINE
+- CyberChef
+- DEFT
+- EnCase
+- ExifTool
+- Forensic Email Collector
+- Forensic Explorer
+- Forensic Falcon Neo
 - FTK
 - FTK Imager
-- XAMN
-- X-Ways
-- CyberChef
-- NSRL hash list
-- Arsenal Image Mounter
-- Passware
 - hashcat
-- ExifTool
-- Belkasoft Evidence Center
-- CAINE
-- DEFT
-- Forensic Falcon Neo
-- Atola TaskForce
-- Forensic Email Collector
-- VeraCrypt
-- Autopsy
-- The Sleuth Kit
+- HstEx
+- MacQuisition
 - Mount Image Pro
 - NetAnalysis
-- HstEx
+- NSRL hash list
+- OSForensics
+- Paraben E3
+- Passware
+- Physical Analyzer
+- The Sleuth Kit
+- UFED 4PC
+- USB Detective
+- VeraCrypt
+- XAMN
+- X-Ways
 
 If your favorite tool is missing, feel free to open an Issue and provide me with a link to that tool's website.
 
