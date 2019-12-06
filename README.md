@@ -18,6 +18,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - DEFT
 - EnCase
 - ExifTool
+- Eric Zimmerman's Forensic Tools
 - Forensic Email Collector
 - Forensic Explorer
 - Forensic Falcon Neo
@@ -28,6 +29,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - MacQuisition
 - Mount Image Pro
 - NetAnalysis
+- NirSoft Launcher
 - NSRL hash list
 - OSForensics
 - Paraben E3
@@ -47,6 +49,7 @@ If your favorite tool is missing, feel free to open an Issue and provide me with
 pip3 install tabulate
 pip3 install grequests
 pip3 install beautifulsoup4
+pip3 install tkScrolledFrame
 ```
 
 ## Tested with Python 3.7 under
