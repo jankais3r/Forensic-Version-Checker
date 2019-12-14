@@ -45,6 +45,15 @@ Script that checks for available updates for the most commonly used Digital Fore
 If your favorite tool is missing, feel free to open an Issue and provide me with a link to that tool's website.
 
 ## Dependencies
+
+You can install the dependencies with:
+
+```
+pip3 install -r requirements.txt
+```
+
+or individually with:
+
 ```
 pip3 install tabulate
 pip3 install grequests
