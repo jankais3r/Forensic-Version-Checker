@@ -16,6 +16,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - CAINE
 - CyberChef
 - DEFT
+- ElcomSoft iOS Forensic Toolkit
 - EnCase
 - ExifTool
 - Eric Zimmerman's Forensic Tools
@@ -26,12 +27,16 @@ Script that checks for available updates for the most commonly used Digital Fore
 - FTK Imager
 - hashcat
 - HstEx
+- IREC
+- iVe
 - MacQuisition
+- MobilEdit
 - Mount Image Pro
 - NetAnalysis
 - NirSoft Launcher
 - NSRL hash list
 - OSForensics
+- Oxygen Forensic Detective
 - Paraben E3
 - Passware
 - Physical Analyzer
@@ -64,3 +69,5 @@ pip3 install tkScrolledFrame
 ## Tested with Python 3.7 under
 - Windows 10
 - Ubuntu WSL (requires X server, e.g. Xming)
+- Ubuntu 18.04
+- macOS Mojave
