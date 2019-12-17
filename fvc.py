@@ -7,9 +7,9 @@ import queue
 import base64
 import webbrowser
 import configparser
-from tkinter import *
+from sys import platform
 from threading import Thread
-from tkinter import messagebox
+from xml.etree import ElementTree
 
 try:
 	from tabulate import tabulate
@@ -20,6 +20,12 @@ try:
 	import grequests
 except:
 	print('Install qrequests with "pip3 install grequests"')
+	quit()
+try:
+	from tkinter import *
+	from tkinter import messagebox
+except:
+	print('Install tkinter with "sudo apt install python3-tk"')
 	quit()
 try:
 	from bs4 import BeautifulSoup
@@ -71,12 +77,16 @@ ftk =
 ftkimager = 
 hashcat = 
 hstex = 
+irec = 
+ive = 
 macquisition = 
+mobiledit = 
 mountimagepro = 
 netanalysis = 
 nirsoft = 
 nsrl = 
 osf = 
+oxygen = 
 paraben = 
 passware = 
 physicalanalyzer = 
@@ -146,6 +156,11 @@ cyberchef_parser = '''
 deft_parser = '''
 			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
 			version = soup.find('td', {'class': 'TablesInvert'}).text.strip()
+'''
+eift_parser = '''
+			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
+			version = soup.find('h4', {'class': 'green'}).text.strip()
+			version = version.replace('Elcomsoft iOS Forensic Toolkit v.', '')
 '''
 encase_parser = '''
 			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
@@ -261,7 +276,9 @@ forensicexplorer_parser = '''
 '''
 ffn_parser = '''
 			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('table', {'class': 'datatableblue'}).findAll('tr')[2].findAll('td')[1].text.strip()
+			version = soup.find(text = re.compile('\.zip')).strip()
+			version = version.replace('falcon-neo_V', '')
+			version = version.replace('.zip', '')
 '''
 ftk_parser = '''
 			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
@@ -285,10 +302,25 @@ hstex_parser = '''
 			version = soup.find('span', {'class': 'avia_iconbox_title'}).text.strip()
 			version = version.replace('Download HstEx v', '')
 '''
+irec_parser = '''
+			soup = response[used_tools_counter].text
+			version = soup[soup.find('"LatestVersion":"') + 17:soup.find('"',soup.find('"LatestVersion":"') + 17)]
+'''
+ive_parser = '''
+			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
+			version = soup.select_one('a[href^="https://berla.co/release-resources-ive"]')['title']
+			version = version.replace('Release Resources: iVe v', '')
+'''
 macquisition_parser = '''
 			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
 			version = soup.find('dl', {'id': 'macquisitionrevision'}).select_one('span').text.strip()
 			version = version.replace('MacQuisition ', '')
+'''
+mobiledit_parser = '''
+			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
+			version = soup.select_one('a[href^="/forensic-express/whats-new"]').previous_sibling.text
+			version = version.replace('|', '')
+			version = version.strip()
 '''
 mountimagepro_parser = '''
 			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
@@ -312,11 +344,13 @@ nsrl_parser = '''
 			version = version.split(' ')[0]
 '''
 osf_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('h4').text.strip()
-			version = version.replace(' build ', '.')
-			version = version.split(' ')[0]
-			version = version[1:]
+			tree = ElementTree.fromstring(response[used_tools_counter].text)
+			version = tree.findall('.//Program_Info/Program_Version')[0].text
+'''
+oxygen_parser = '''
+			soup = response[used_tools_counter].text
+			version = soup[soup.find('newversion=') + 11:soup.find('\\n',soup.find('newversion=') + 11)]
+			version = version.strip()
 '''
 paraben_parser = '''
 			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
@@ -325,12 +359,11 @@ paraben_parser = '''
 '''
 passware_parser = '''
 			soup = response[used_tools_counter].text
-			version = soup[soup.find('"fullVersion": "')+16:soup.find('"',soup.find('"fullVersion": "')+16)]
+			version = soup[soup.find('"fullVersion": "') + 16:soup.find('"',soup.find('"fullVersion": "') + 16)]
 '''
 physicalanalyzer_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find(text = re.compile('(Physical|Logical).Analyzer.')).parent.select_one('b').text.strip()
-			version = version.replace('Version ', '')
+			tree = ElementTree.fromstring(response[used_tools_counter].text)
+			version = tree.findall('.//CurrentVersion')[0].text
 '''
 sleuthkit_parser = '''
 			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
@@ -338,9 +371,8 @@ sleuthkit_parser = '''
 			version = version.replace('The Sleuth Kit ', '')
 '''
 ufed4pc_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find(text = re.compile('UFED.(4PC|Ultimate).')).parent.select_one('b').text.strip()
-			version = version.replace('Version ', '')
+			tree = ElementTree.fromstring(response[used_tools_counter].text)
+			version = tree.attrib['updateVersion']
 '''
 usbdetective_parser = '''
 			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
@@ -385,7 +417,7 @@ if (gui == 'Display all' or current != ''):
 	''' + fieldname + '''_latest = Entry(inner_frame, font = ('TkDefaultFont', fontsize), width = 8, state = 'readonly')
 	''' + fieldname + '''_latest.grid(column = 2, row = rowID, sticky = N+S+E+W)
 	''' + fieldname + '''_update = Label(inner_frame, text = '', font = ('TkDefaultFont', fontsize))
-	''' + fieldname + '''_update.grid(column = 3, row = rowID, padx = (0, 10))
+	''' + fieldname + '''_update.grid(column = 3, row = rowID, sticky = W)
 	''' + fieldname + '''_update.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new(\'''' + url + '''\'))
 	widget_order.append(''' + fieldname + '''_current)
 	used_tools.append(\'''' + fieldname + '''\')
@@ -469,6 +501,7 @@ def crawl():
 				'caine'						:	'https://distrowatch.com/table.php?distribution=caine',
 				'cyberchef'					:	'https://github.com/gchq/CyberChef/releases/latest',
 				'deft'						:	'https://distrowatch.com/table.php?distribution=deft',
+				'eift'						:	'https://www.elcomsoft.com/eift.html',
 				'encase'					:	'https://www.guidancesoftware.com/encase-forensic',
 				'exiftool'					:	'https://owl.phy.queensu.ca/~phil/exiftool/history.html',
 				'ez_amcacheparser'			:	'https://ericzimmerman.github.io/index.md',
@@ -491,22 +524,26 @@ def crawl():
 				'ez_wxtcmd'					:	'https://ericzimmerman.github.io/index.md',
 				'fec'						:	'https://www.metaspike.com/fec-change-log/',
 				'forensicexplorer'			:	'http://www.forensicexplorer.com/version.php',
-				'ffn'						:	'https://www.logicube.com/knowledge/forensic-falcon-neo/',
+				'ffn'						:	'http://updates.logicube.com/Falcon-Neo/',
 				'ftk'						:	'https://accessdata.com/product-download',
 				'ftkimager'					:	'https://accessdata.com/product-download',
 				'hashcat'					:	'https://hashcat.net/beta/',
 				'hstex'						:	'https://www.digital-detective.net/start/hstex-quick-start/',
+				'irec'						:	'http://www.binalyze.com/check-update/1/',
+				'ive'						:	'https://berla.co/customer-support/',
 				'macquisition'				:	'https://www.blackbagtech.com/downloads/',
-				'mountimagepro'				:	'http://www.forensicexplorer.com/download.php',
+				'mobiledit'					:	'https://www.mobiledit.com/downloads',
+				'mountimagepro'				:	'http://www.mountimage.com/download-computer-forensics-software.php',
 				'netanalysis'				:	'https://www.digital-detective.net/start/netanalysis-quick-start/',
 				'nirsoft'					:	'https://launcher.nirsoft.net/downloads/index.html',
 				'nsrl'						:	'https://s3.amazonaws.com/rds.nsrl.nist.gov/RDS/current/README.txt',
-				'osf'						:	'https://www.osforensics.com/whatsnew.html',
+				'osf'						:	'https://www.passmark.com/padfiles/osforensics.xml',
+				'oxygen'					:	'https://oxygen-forensic.com/update/oxydetective.inf',
 				'paraben'					:	'https://paraben.com/paraben-downloads/',
 				'passware'					:	'https://account.passware.com/products/changelog/55',
-				'physicalanalyzer'			:	'https://www.cellebrite.com/en/support/product-releases/',
+				'physicalanalyzer'			:	'https://cdn5.cellebrite.org/Forensic/Physical%20Analyzer/_Manifest/PhysicalAnalyzer.xml',
 				'sleuthkit'					:	'https://github.com/sleuthkit/sleuthkit/releases/latest',
-				'ufed4pc'					:	'https://www.cellebrite.com/en/support/product-releases/',
+				'ufed4pc'					:	'https://cdn5.cellebrite.org/Forensic/UFED/_Manifest/update.UFED4PC',
 				'usbdetective'				:	'https://usbdetective.com/release-notes/',
 				'veracrypt'					:	'https://www.veracrypt.fr/en/Downloads.html',
 				'xamn'						:	'https://www.msab.com/downloads/',
@@ -518,7 +555,7 @@ def crawl():
 	for tool in used_tools:
 		urls.append(all_urls[tool])
 	
-	mt_queue.put(grequests.map((grequests.get(u, headers = ua_headers) for u in urls), size = 5))
+	mt_queue.put(grequests.map((grequests.get(u, headers = ua_headers) for u in urls)))
 
 def refresh_gui():
 	global response
@@ -559,6 +596,7 @@ def refresh_gui():
 	update_gui('caine', caine_parser)
 	update_gui('cyberchef', cyberchef_parser)
 	update_gui('deft', deft_parser)
+	update_gui('eift', eift_parser)
 	update_gui('encase', encase_parser)
 	update_gui('exiftool', exiftool_parser)
 	update_gui('ez_amcacheparser', ez_amcacheparser_parser)
@@ -586,12 +624,16 @@ def refresh_gui():
 	update_gui('ftkimager', ftkimager_parser)
 	update_gui('hashcat', hashcat_parser)
 	update_gui('hstex', hstex_parser)
+	update_gui('irec', irec_parser)
+	update_gui('ive', ive_parser)
 	update_gui('macquisition', macquisition_parser)
+	update_gui('mobiledit', mobiledit_parser)
 	update_gui('mountimagepro', mountimagepro_parser)
 	update_gui('netanalysis', netanalysis_parser)
 	update_gui('nirsoft', nirsoft_parser)
 	update_gui('nsrl', nsrl_parser)
 	update_gui('osf', osf_parser)
+	update_gui('oxygen', oxygen_parser)
 	update_gui('paraben', paraben_parser)
 	update_gui('passware', passware_parser)
 	update_gui('physicalanalyzer', physicalanalyzer_parser)
@@ -608,8 +650,8 @@ def refresh_gui():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version == '1.9'
-	if version != '1.9':
+		version = '1.10'
+	if version != '1.10':
 		about.configure(text = 'Update FVC', fg = 'blue', cursor = 'hand2')
 		about.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new('https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'))
 	
@@ -632,6 +674,7 @@ def run_cli():
 	gather_used_tools('caine')
 	gather_used_tools('cyberchef')
 	gather_used_tools('deft')
+	gather_used_tools('eift')
 	gather_used_tools('encase')
 	gather_used_tools('exiftool')
 	gather_used_tools('ez_amcacheparser')
@@ -659,12 +702,16 @@ def run_cli():
 	gather_used_tools('ftkimager')
 	gather_used_tools('hashcat')
 	gather_used_tools('hstex')
+	gather_used_tools('irec')
+	gather_used_tools('ive')
 	gather_used_tools('macquisition')
+	gather_used_tools('mobiledit')
 	gather_used_tools('mountimagepro')
 	gather_used_tools('netanalysis')
 	gather_used_tools('nirsoft')
 	gather_used_tools('nsrl')
 	gather_used_tools('osf')
+	gather_used_tools('oxygen')
 	gather_used_tools('paraben')
 	gather_used_tools('passware')
 	gather_used_tools('physicalanalyzer')
@@ -698,26 +745,27 @@ def run_cli():
 	update_cli('caine', 'CAINE', caine_parser)
 	update_cli('cyberchef', 'CyberChef', cyberchef_parser)
 	update_cli('deft', 'DEFT', deft_parser)
+	update_cli('eift', 'EIFT', eift_parser)
 	update_cli('encase', 'Encase', encase_parser)
 	update_cli('exiftool', 'ExifTool', exiftool_parser)
-	update_cli('ez_amcacheparser', 'EZ AmcacheParser ',  ez_amcacheparser_parser)
-	update_cli('ez_appcompatcacheparser', 'EZ AppCompatCacheParser ',  ez_appcompatcacheparser_parser)
-	update_cli('ez_bstrings', 'EZ bstrings ',  ez_bstrings_parser)
-	update_cli('ez_evtxex', 'EZ Evtx Explorer/EvtxECmd ',  ez_evtxex_parser)
-	update_cli('ez_jlecmd', 'EZ JLECmd ',  ez_jlecmd_parser)
-	update_cli('ez_jumplistex', 'EZ JumpList Explorer ',  ez_jumplistex_parser)
-	update_cli('ez_lecmd', 'EZ LECmd ',  ez_lecmd_parser)
-	update_cli('ez_mftecmd', 'EZ MFTECmd ',  ez_mftecmd_parser)
-	update_cli('ez_mftexplorer', 'EZ MFTExplorer ',  ez_mftexplorer_parser)
-	update_cli('ez_pecmd', 'EZ PECmd ',  ez_pecmd_parser)
-	update_cli('ez_rbcmd', 'EZ RBCmd ',  ez_rbcmd_parser)
-	update_cli('ez_recentfilecacheparser', 'EZ RecentFileCacheParser ',  ez_recentfilecacheparser_parser)
-	update_cli('ez_registryex', 'EZ Registry Explorer/RECmd ',  ez_registryex_parser)
-	update_cli('ez_sdbex', 'EZ SDB Explorer ',  ez_sdbex_parser)
-	update_cli('ez_shellbagex', 'EZ ShellBags Explorer ',  ez_shellbagex_parser)
-	update_cli('ez_timelineex', 'EZ Timeline Explorer ',  ez_timelineex_parser)
-	update_cli('ez_vscmount', 'EZ VSCMount ',  ez_vscmount_parser)
-	update_cli('ez_wxtcmd', 'EZ WxTCmd ',  ez_wxtcmd_parser)
+	update_cli('ez_amcacheparser', 'EZ AmcacheParser',  ez_amcacheparser_parser)
+	update_cli('ez_appcompatcacheparser', 'EZ AppCompatCacheParser',  ez_appcompatcacheparser_parser)
+	update_cli('ez_bstrings', 'EZ bstrings',  ez_bstrings_parser)
+	update_cli('ez_evtxex', 'EZ Evtx Explorer/EvtxECmd',  ez_evtxex_parser)
+	update_cli('ez_jlecmd', 'EZ JLECmd',  ez_jlecmd_parser)
+	update_cli('ez_jumplistex', 'EZ JumpList Explorer',  ez_jumplistex_parser)
+	update_cli('ez_lecmd', 'EZ LECmd',  ez_lecmd_parser)
+	update_cli('ez_mftecmd', 'EZ MFTECmd',  ez_mftecmd_parser)
+	update_cli('ez_mftexplorer', 'EZ MFTExplorer',  ez_mftexplorer_parser)
+	update_cli('ez_pecmd', 'EZ PECmd',  ez_pecmd_parser)
+	update_cli('ez_rbcmd', 'EZ RBCmd',  ez_rbcmd_parser)
+	update_cli('ez_recentfilecacheparser', 'EZ RecentFileCacheParser',  ez_recentfilecacheparser_parser)
+	update_cli('ez_registryex', 'EZ Registry Explorer/RECmd',  ez_registryex_parser)
+	update_cli('ez_sdbex', 'EZ SDB Explorer',  ez_sdbex_parser)
+	update_cli('ez_shellbagex', 'EZ ShellBags Explorer',  ez_shellbagex_parser)
+	update_cli('ez_timelineex', 'EZ Timeline Explorer',  ez_timelineex_parser)
+	update_cli('ez_vscmount', 'EZ VSCMount',  ez_vscmount_parser)
+	update_cli('ez_wxtcmd', 'EZ WxTCmd',  ez_wxtcmd_parser)
 	update_cli('fec', 'Forensic Email Collector', fec_parser)
 	update_cli('forensicexplorer', 'Forensic Explorer', forensicexplorer_parser)
 	update_cli('ffn', 'Forensic Falcon Neo', ffn_parser)
@@ -725,12 +773,16 @@ def run_cli():
 	update_cli('ftkimager', 'FTK Imager', ftkimager_parser)
 	update_cli('hashcat', 'hashcat', hashcat_parser)
 	update_cli('hstex', 'HstEx', hstex_parser)
+	update_cli('irec', 'IREC', irec_parser)
+	update_cli('ive', 'iVe', ive_parser)
 	update_cli('macquisition', 'MacQuisition', macquisition_parser)
+	update_cli('mobiledit', 'MobilEdit', mobiledit_parser)
 	update_cli('mountimagepro', 'Mount Image Pro', mountimagepro_parser)
 	update_cli('netanalysis', 'NetAnalysis', netanalysis_parser)
 	update_cli('nirsoft', 'NirSoft Launcher', nirsoft_parser)
 	update_cli('nsrl', 'NSRL hash set', nsrl_parser)
 	update_cli('osf', 'OSForensics', osf_parser)
+	update_cli('oxygen', 'Oxygen Forensic', oxygen_parser)
 	update_cli('paraben', 'Paraben E3', paraben_parser)
 	update_cli('passware', 'Passware', passware_parser)
 	update_cli('physicalanalyzer', 'Physical Analyzer', physicalanalyzer_parser)
@@ -749,8 +801,8 @@ def run_cli():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version == '1.9'
-	if (version == '1.9'):
+		version = '1.10'
+	if (version == '1.10'):
 		pass
 	else:
 		print('')
@@ -772,21 +824,21 @@ config['CURRENT'][\'''' + tool + '''\'] = ''' + tool + '''_current.get()
 	gui_toggle.configure(state = 'normal')
 
 def about_box():
-	messagebox.showinfo('About', 'Forensic Version Checker v1.9\n\n\
+	messagebox.showinfo('About', 'Forensic Version Checker v1.10\n\n\
 Tool\'s homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\n\
 Digital Forensics Discord:\nhttps://discord.gg/pNMZunG')
 
 def get_max_height():
 	helper = Tk()
 	helper.attributes('-alpha', 0)
-	try:
+	if os.name == 'nt':
 		helper.state('zoomed')
 		helper.update()
 		usable_height = helper.winfo_height()
-	except:
+	else:
 		usable_height = helper.winfo_screenheight()
 	helper.destroy()
-	return usable_height - 30
+	return usable_height
 
 try:
 	if (config['CURRENT']['gui'] == '1' or config['CURRENT']['gui'] == 'Display all'):
@@ -842,6 +894,8 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	
 	if os.name == 'nt':
 		fontsize = 9
+	elif platform == 'darwin':
+		fontsize = 12
 	else:
 		fontsize = 10
 	
@@ -853,7 +907,7 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	latest = Label(inner_frame, text = 'Latest Version', font = ('TkDefaultFont', fontsize, 'underline'), pady = 3)
 	latest.grid(column = 2, row = rowID)
 	latest = Label(inner_frame, text = 'Update', font = ('TkDefaultFont', fontsize, 'underline'), pady = 3)
-	latest.grid(column = 3, row = rowID, padx = (0, 10))
+	latest.grid(column = 3, row = rowID, padx = (0, 10), sticky = W)
 	rowID += 1
 	
 	widget_order = []
@@ -867,26 +921,27 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	build_gui('caine', 'CAINE', 'https://www.caine-live.net/')
 	build_gui('cyberchef', 'CyberChef', 'https://github.com/gchq/CyberChef/releases/latest')
 	build_gui('deft', 'DEFT', 'http://na.mirror.garr.it/mirrors/deft/zero/')
+	build_gui('eift', 'EIFT', 'https://www.elcomsoft.com/eift.html')
 	build_gui('encase', 'EnCase', 'https://www.guidancesoftware.com/encase-forensic')
 	build_gui('exiftool', 'ExifTool', 'https://owl.phy.queensu.ca/~phil/exiftool/')
-	build_gui('ez_amcacheparser', 'EZ AmcacheParser ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_appcompatcacheparser', 'EZ AppCompatCacheParser ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_bstrings', 'EZ bstrings ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_evtxex', 'EZ Evtx Explorer/EvtxECmd ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_jlecmd', 'EZ JLECmd ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_jumplistex', 'EZ JumpList Explorer ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_lecmd', 'EZ LECmd ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_mftecmd', 'EZ MFTECmd ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_mftexplorer', 'EZ MFTExplorer ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_pecmd', 'EZ PECmd ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_rbcmd', 'EZ RBCmd ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_recentfilecacheparser', 'EZ RecentFileCacheParser ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_registryex', 'EZ Registry Explorer/RECmd ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_sdbex', 'EZ SDB Explorer ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_shellbagex', 'EZ ShellBags Explorer ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_timelineex', 'EZ Timeline Explorer ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_vscmount', 'EZ VSCMount ', 'https://ericzimmerman.github.io/#!index.md')
-	build_gui('ez_wxtcmd', 'EZ WxTCmd ', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_amcacheparser', 'EZ AmcacheParser', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_appcompatcacheparser', 'EZ AppCompatCacheParser', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_bstrings', 'EZ bstrings', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_evtxex', 'EZ Evtx Explorer/EvtxECmd', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_jlecmd', 'EZ JLECmd', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_jumplistex', 'EZ JumpList Explorer', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_lecmd', 'EZ LECmd', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_mftecmd', 'EZ MFTECmd', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_mftexplorer', 'EZ MFTExplorer', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_pecmd', 'EZ PECmd', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_rbcmd', 'EZ RBCmd', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_recentfilecacheparser', 'EZ RecentFileCacheParser', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_registryex', 'EZ Registry Explorer/RECmd', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_sdbex', 'EZ SDB Explorer', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_shellbagex', 'EZ ShellBags Explorer', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_timelineex', 'EZ Timeline Explorer', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_vscmount', 'EZ VSCMount', 'https://ericzimmerman.github.io/#!index.md')
+	build_gui('ez_wxtcmd', 'EZ WxTCmd', 'https://ericzimmerman.github.io/#!index.md')
 	build_gui('fec', 'Forensic Email Collector', 'http://www.metaspike.com/fec-change-log/')
 	build_gui('forensicexplorer', 'Forensic Explorer', 'http://www.forensicexplorer.com/download.php')
 	build_gui('ffn', 'Forensic Falcon Neo', 'https://www.logicube.com/knowledge/forensic-falcon-neo/')
@@ -894,12 +949,16 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	build_gui('ftkimager', 'FTK Imager', 'https://accessdata.com/product-download')
 	build_gui('hashcat', 'hashcat', 'https://hashcat.net/beta/')
 	build_gui('hstex', 'HstEx', 'https://www.digital-detective.net/start/hstex-quick-start/')
+	build_gui('irec', 'IREC', 'https://binalyze.com/products/irec/release-notes/')
+	build_gui('ive', 'iVe', 'https://berla.co/customer-support/')
 	build_gui('macquisition', 'MacQuisition', 'https://www.blackbagtech.com/downloads/')
+	build_gui('mobiledit', 'MobilEdit', 'https://www.mobiledit.com/downloads')
 	build_gui('mountimagepro', 'Mount Image Pro', 'http://www.forensicexplorer.com/download.php')
 	build_gui('netanalysis', 'NetAnalysis', 'https://www.digital-detective.net/start/netanalysis-quick-start/')
 	build_gui('nirsoft', 'NirSoft Launcher', 'https://launcher.nirsoft.net/downloads/index.html')
 	build_gui('nsrl', 'NSRL hash set', 'https://www.nist.gov/itl/ssd/software-quality-group/national-software-reference-library-nsrl/nsrl-download/current-rds')
 	build_gui('osf', 'OSForensics', 'https://www.osforensics.com/download.html')
+	build_gui('oxygen', 'Oxygen Forensic', 'http://www.oxygen-forensic.com/download/whatsnew/OFD/WhatsNew.html')
 	build_gui('paraben', 'Paraben E3', 'https://paraben.com/paraben-downloads/')
 	build_gui('passware', 'Passware', 'https://www.passware.com/kit-forensic/whatsnew/')
 	build_gui('physicalanalyzer', 'Physical Analyzer', 'https://www.cellebrite.com/en/support/product-releases/')
@@ -913,24 +972,41 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	gui_option = StringVar()
 	gui_option.set(gui)
 	gui_toggle = OptionMenu(inner_frame, gui_option, 'Display all', 'Display used', 'CLI mode')
-	gui_toggle.grid(column = 0, row = rowID, sticky = N+S+W, padx = (5), pady = (7, 7))
 	
 	current_save = Button(inner_frame, text = 'Save', command = save)
-	current_save.grid(column = 1, row = rowID, columnspan = 2, sticky = N+S+E+W, pady = (7, 7))
+	current_save.grid(column = 1, row = rowID, columnspan = 2, sticky = E+W, pady = (7, 7))
 	
-	about = Label(inner_frame, text = '?', font = ('TkDefaultFont', fontsize), padx = 5, fg = 'grey', cursor = 'hand2')
-	about.grid(column = 3, row = rowID, pady = (7, 7))
+	pixel = PhotoImage(width = 1, height = 1)
+	if os.name == 'nt':
+		gui_toggle.config(image = pixel, height = 14, compound = 'c')
+		gui_toggle.grid(column = 0, row = rowID, sticky = N+S+W, padx = (5, 0), pady = (7, 7))
+		current_save.config(image = pixel, height = 18, compound = 'c')
+	elif platform == 'darwin':
+		gui_toggle.config(image = pixel, height = 18, compound = 'c')
+		gui_toggle.grid(column = 0, row = rowID, sticky = N+S+W, padx = (4, 0), pady = (5, 7))
+		current_save.config(image = pixel, height = 14, compound = 'c')
+	else:
+		gui_toggle.config(image = pixel, height = 16, compound = 'c')
+		gui_toggle.grid(column = 0, row = rowID, sticky = N+S+W, padx = (4, 0), pady = (7, 7))
+		current_save.config(image = pixel, height = 16, compound = 'c')
+	
+	about = Label(inner_frame, text = '    ?', font = ('TkDefaultFont', fontsize), fg = 'grey', cursor = 'hand2')
+	about.grid(column = 3, row = rowID, pady = (7, 7), sticky = W)
 	about.bind('<ButtonRelease-1>', lambda e: about_box())
 	
 	root.update()
 	max_heigth = get_max_height()
 	
-	if inner_frame.winfo_height() > max_heigth:
-		sf.configure(height = max_heigth - 40, width = inner_frame.winfo_width() + 20)
+	if (inner_frame.winfo_height() > (max_heigth - 50)) and max_heigth != 200:
+		sf.configure(height = max_heigth - 50, width = inner_frame.winfo_width() + 20)
 		root.resizable(False, True)
 	else:
 		sf.configure(height = inner_frame.winfo_height(), width = inner_frame.winfo_width() + 20)
-		root.resizable(False, False)
+		root.resizable(False, True)
+	
+	root.lift()
+	root.attributes('-topmost', True)
+	root.attributes('-topmost', False)
 	
 	if first_run != True:
 		refresh_gui()
@@ -941,7 +1017,12 @@ Please populate your current tool versions,\nchoose a display mode, and click Sa
 	for widget in widget_order:
 		widget.lift()
 	
-	root.mainloop()
+	while True:
+		try:
+			root.mainloop()
+			break
+		except UnicodeDecodeError:
+			pass
 else:
 	table = []
 	run_cli()
