@@ -50,6 +50,7 @@ blacklight =
 caine = 
 cyberchef = 
 deft = 
+eift = 
 encase = 
 exiftool = 
 ez_amcacheparser = 
@@ -98,9 +99,13 @@ xamn =
 xways = 
 '''
 
-	configfile = open('current_versions.ini', 'w')
-	configfile.write(default_config)
-	configfile.close()
+	try:
+		configfile = open('current_versions.ini', 'w')
+		configfile.write(default_config)
+		configfile.close()
+	except:
+		print('Can\'t save the config file. Please check your permissions.')
+		quit()
 	first_run = True
 else:
 	first_run = False
@@ -114,288 +119,82 @@ response = []
 used_tools = []
 used_tools_counter = 1
 
-aim_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('h4').text.strip()
-			version = version.replace('Arsenal Image Mounter v', '')
-			version = version.split(' ')[0]
-'''
-atola_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('a[href^="http://dl.atola.com/taskforce/"]').text.strip()
-			version = version.replace('Download ', '')
-'''
-autopsy_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
-			version = version.replace('Autopsy ', '')
-'''
-axiom_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('h2').text.strip()
-			version = version.replace('MAGNET AXIOM ', '')
-'''
-bec_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.text.strip()
-'''
-blacklight_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('dl', {'id': 'blacklightrevision'}).select_one('span').text.strip()
-			version = version.replace('BlackLight ', '')
-'''
-caine_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('td', {'class': 'TablesInvert'}).text.strip()
-'''
-cyberchef_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
-			version = version.replace('v', '')
-'''
-deft_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('td', {'class': 'TablesInvert'}).text.strip()
-'''
-eift_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('h4', {'class': 'green'}).text.strip()
-			version = version.replace('Elcomsoft iOS Forensic Toolkit v.', '')
-'''
-encase_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('h3').text.strip()
-			version = version.replace('EnCase Forensic ', '')
-			version = version.split(':')[0]
-'''
-exiftool_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.findAll('a')[3]['name']
-			version = version.replace('v', '')
-'''
-ez_amcacheparser_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| AmcacheParser | [') + 19:soup.find(']',soup.find('| AmcacheParser | [') + 19)]
-			version = version.strip()
-'''
-ez_appcompatcacheparser_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| AppCompatCacheParser | [') + 26:soup.find(']',soup.find('| AppCompatCacheParser | [') + 26)]
-			version = version.strip()
-'''
-ez_bstrings_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| bstrings | [') + 14:soup.find(']',soup.find('| bstrings | [') + 14)]
-			version = version.strip()
-'''
-ez_evtxex_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| Evtx Explorer/EvtxECmd | [') + 28:soup.find(']',soup.find('| Evtx Explorer/EvtxECmd | [') + 28)]
-			version = version.strip()
-'''
-ez_jlecmd_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| JLECmd | [') + 12:soup.find(']',soup.find('| JLECmd | [') + 12)]
-			version = version.strip()
-'''
-ez_jumplistex_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| JumpList Explorer | [') + 23:soup.find(']',soup.find('| JumpList Explorer | [') + 23)]
-			version = version.strip()
-'''
-ez_lecmd_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| LECmd  | [') + 12:soup.find(']',soup.find('| LECmd  | [') + 12)]
-			version = version.strip()
-'''
-ez_mftecmd_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| MFTECmd |[') + 12:soup.find(']',soup.find('| MFTECmd |[') + 12)]
-			version = version.strip()
-'''
-ez_mftexplorer_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| MFTExplorer |[') + 16:soup.find(']',soup.find('| MFTExplorer |[') + 16)]
-			version = version.strip()
-'''
-ez_pecmd_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| PECmd  | [') + 12:soup.find(']',soup.find('| PECmd  | [') + 12)]
-			version = version.strip()
-'''
-ez_rbcmd_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| RBCmd  | [') + 12:soup.find(']',soup.find('| RBCmd  | [') + 12)]
-			version = version.strip()
-'''
-ez_recentfilecacheparser_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| RecentFileCacheParser | [') + 27:soup.find(']',soup.find('| RecentFileCacheParser | [') + 27)]
-			version = version.strip()
-'''
-ez_registryex_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| Registry Explorer/RECmd | [') + 29:soup.find(']',soup.find('| Registry Explorer/RECmd | [') + 29)]
-			version = version.strip()
-'''
-ez_sdbex_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| SDB Explorer | [') + 18:soup.find(']',soup.find('| SDB Explorer | [') + 18)]
-			version = version.strip()
-'''
-ez_shellbagex_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| ShellBags Explorer | [') + 24:soup.find(']',soup.find('| ShellBags Explorer | [') + 24)]
-			version = version.strip()
-'''
-ez_timelineex_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| Timeline Explorer | [') + 23:soup.find(']',soup.find('| Timeline Explorer | [') + 23)]
-			version = version.strip()
-'''
-ez_vscmount_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| VSCMount |[') + 13:soup.find(']',soup.find('| VSCMount |[') + 13)]
-			version = version.strip()
-'''
-ez_wxtcmd_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('| WxTCmd | [') + 12:soup.find(']',soup.find('| WxTCmd | [') + 12)]
-			version = version.strip()
-'''
-fec_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('h4').text.strip()
-			version = version.split(' ')[0]
-			version = version.replace('v', '')
-'''
-forensicexplorer_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.text.strip()
-			version = version.replace('v', '')
-'''
-ffn_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find(text = re.compile('\.zip')).strip()
-			version = version.replace('falcon-neo_V', '')
-			version = version.replace('.zip', '')
-'''
-ftk_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('a[href^="http://accessdata.com/product-download/forensic-toolkit-ftk-version"]').parent.parent.select_one('h5').text.strip()
-			version = version.replace('Forensic Toolkit (FTK) version ', '')
-'''
-ftkimager_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('a[href^="http://accessdata.com/product-download/ftk-imager-version"]').parent.parent.select_one('h5').text.strip()
-			version = version.replace('FTK Imager version ', '')
-'''
-hashcat_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('a[href^="hashcat-"]')['href']
-			version = version.replace('hashcat-', '')
-			version = version.replace('%2B', '+')
-			version = version.replace('.7z', '')
-'''
-hstex_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('span', {'class': 'avia_iconbox_title'}).text.strip()
-			version = version.replace('Download HstEx v', '')
-'''
-irec_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('"LatestVersion":"') + 17:soup.find('"',soup.find('"LatestVersion":"') + 17)]
-'''
-ive_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('a[href^="https://berla.co/release-resources-ive"]')['title']
-			version = version.replace('Release Resources: iVe v', '')
-'''
-macquisition_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('dl', {'id': 'macquisitionrevision'}).select_one('span').text.strip()
-			version = version.replace('MacQuisition ', '')
-'''
-mobiledit_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('a[href^="/forensic-express/whats-new"]').previous_sibling.text
-			version = version.replace('|', '')
-			version = version.strip()
-'''
-mountimagepro_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('a[href^="http://download.getdata.com/support/mip/MountImagePro"]')['href']
-			version = version[version.index('(v'):]
-			version = version[2:-5]
-'''
-netanalysis_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('span', {'class': 'avia_iconbox_title'}).text.strip()
-			version = version.replace('Download NetAnalysis v', '')
-'''
-nirsoft_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find(text = re.compile('Current Package Version:')).next_sibling.contents[0].strip()
-'''
-nsrl_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.text.strip()
-			version = version.replace('NSRL RDS Version ', '')
-			version = version.split(' ')[0]
-'''
-osf_parser = '''
-			tree = ElementTree.fromstring(response[used_tools_counter].text)
-			version = tree.findall('.//Program_Info/Program_Version')[0].text
-'''
-oxygen_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('newversion=') + 11:soup.find('\\n',soup.find('newversion=') + 11)]
-			version = version.strip()
-'''
-paraben_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('a[href^="https://1drv.ms/"]').text.strip()
-			version = version.replace('Download x64-Version ', '')
-'''
-passware_parser = '''
-			soup = response[used_tools_counter].text
-			version = soup[soup.find('"fullVersion": "') + 16:soup.find('"',soup.find('"fullVersion": "') + 16)]
-'''
-physicalanalyzer_parser = '''
-			tree = ElementTree.fromstring(response[used_tools_counter].text)
-			version = tree.findall('.//CurrentVersion')[0].text
-'''
-sleuthkit_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
-			version = version.replace('The Sleuth Kit ', '')
-'''
-ufed4pc_parser = '''
-			tree = ElementTree.fromstring(response[used_tools_counter].text)
-			version = tree.attrib['updateVersion']
-'''
-usbdetective_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('h2').text.strip()
-			version = version.replace('Version ', '')
-			version = version.split(' ')[0]
-'''
-veracrypt_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.select_one('h3').text.strip()
-			version = version.replace('Latest Stable Release - ', '')
-			version = version.split(' ')[0]
-'''
-xamn_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('a', {'class': 'wpfd_downloadlink'})['title']
-			version = version.replace('XAMN v', '')
-'''
-xways_parser = '''
-			soup = BeautifulSoup(response[used_tools_counter].text, 'html.parser')
-			version = soup.find('div', {'class': 'content'}).select_one('b').text.strip()
-			version = version[19:].strip()
-'''
+try:
+	parsers_url = ['https://raw.githubusercontent.com/jankais3r/Forensic-Version-Checker/master/parsers.ini']
+	parsers_get = (grequests.get(u) for u in parsers_url)
+	parsers_responses = grequests.map(parsers_get)
+	for r in parsers_responses:
+		if r.status_code == 200:
+			parsersfile = open('parsers.ini', 'wb')
+			parsersfile.write(r.content)
+			parsersfile.close()
+			r.close()
+		else:
+			print('Couldn\'t download parser definitions. Please check your Internet connection.')
+			quit()
+except:
+	print('Couldn\'t download parser definitions. Please check your Internet connection.')
+	quit()
+
+parsers = configparser.ConfigParser()
+parsers.read('parsers.ini')
+
+aim_parser = '\t\t\t'+(parsers['PARSERS']['aim_parser']).replace('\n', '\n\t\t\t')
+atola_parser = '\t\t\t'+(parsers['PARSERS']['atola_parser']).replace('\n', '\n\t\t\t')
+autopsy_parser = '\t\t\t'+(parsers['PARSERS']['autopsy_parser']).replace('\n', '\n\t\t\t')
+axiom_parser = '\t\t\t'+(parsers['PARSERS']['axiom_parser']).replace('\n', '\n\t\t\t')
+bec_parser = '\t\t\t'+(parsers['PARSERS']['bec_parser']).replace('\n', '\n\t\t\t')
+blacklight_parser = '\t\t\t'+(parsers['PARSERS']['blacklight_parser']).replace('\n', '\n\t\t\t')
+caine_parser = '\t\t\t'+(parsers['PARSERS']['caine_parser']).replace('\n', '\n\t\t\t')
+cyberchef_parser = '\t\t\t'+(parsers['PARSERS']['cyberchef_parser']).replace('\n', '\n\t\t\t')
+deft_parser = '\t\t\t'+(parsers['PARSERS']['deft_parser']).replace('\n', '\n\t\t\t')
+eift_parser = '\t\t\t'+(parsers['PARSERS']['eift_parser']).replace('\n', '\n\t\t\t')
+encase_parser = '\t\t\t'+(parsers['PARSERS']['encase_parser']).replace('\n', '\n\t\t\t')
+exiftool_parser = '\t\t\t'+(parsers['PARSERS']['exiftool_parser']).replace('\n', '\n\t\t\t')
+ez_amcacheparser_parser = '\t\t\t'+(parsers['PARSERS']['ez_amcacheparser_parser']).replace('\n', '\n\t\t\t')
+ez_appcompatcacheparser_parser = '\t\t\t'+(parsers['PARSERS']['ez_appcompatcacheparser_parser']).replace('\n', '\n\t\t\t')
+ez_bstrings_parser = '\t\t\t'+(parsers['PARSERS']['ez_bstrings_parser']).replace('\n', '\n\t\t\t')
+ez_evtxex_parser = '\t\t\t'+(parsers['PARSERS']['ez_evtxex_parser']).replace('\n', '\n\t\t\t')
+ez_jlecmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_jlecmd_parser']).replace('\n', '\n\t\t\t')
+ez_jumplistex_parser = '\t\t\t'+(parsers['PARSERS']['ez_jumplistex_parser']).replace('\n', '\n\t\t\t')
+ez_lecmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_lecmd_parser']).replace('\n', '\n\t\t\t')
+ez_mftecmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_mftecmd_parser']).replace('\n', '\n\t\t\t')
+ez_mftexplorer_parser = '\t\t\t'+(parsers['PARSERS']['ez_mftexplorer_parser']).replace('\n', '\n\t\t\t')
+ez_pecmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_pecmd_parser']).replace('\n', '\n\t\t\t')
+ez_rbcmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_rbcmd_parser']).replace('\n', '\n\t\t\t')
+ez_recentfilecacheparser_parser = '\t\t\t'+(parsers['PARSERS']['ez_recentfilecacheparser_parser']).replace('\n', '\n\t\t\t')
+ez_registryex_parser = '\t\t\t'+(parsers['PARSERS']['ez_registryex_parser']).replace('\n', '\n\t\t\t')
+ez_sdbex_parser = '\t\t\t'+(parsers['PARSERS']['ez_sdbex_parser']).replace('\n', '\n\t\t\t')
+ez_shellbagex_parser = '\t\t\t'+(parsers['PARSERS']['ez_shellbagex_parser']).replace('\n', '\n\t\t\t')
+ez_timelineex_parser = '\t\t\t'+(parsers['PARSERS']['ez_timelineex_parser']).replace('\n', '\n\t\t\t')
+ez_vscmount_parser = '\t\t\t'+(parsers['PARSERS']['ez_vscmount_parser']).replace('\n', '\n\t\t\t')
+ez_wxtcmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_wxtcmd_parser']).replace('\n', '\n\t\t\t')
+fec_parser = '\t\t\t'+(parsers['PARSERS']['fec_parser']).replace('\n', '\n\t\t\t')
+forensicexplorer_parser = '\t\t\t'+(parsers['PARSERS']['forensicexplorer_parser']).replace('\n', '\n\t\t\t')
+ffn_parser = '\t\t\t'+(parsers['PARSERS']['ffn_parser']).replace('\n', '\n\t\t\t')
+ftk_parser = '\t\t\t'+(parsers['PARSERS']['ftk_parser']).replace('\n', '\n\t\t\t')
+ftkimager_parser = '\t\t\t'+(parsers['PARSERS']['ftkimager_parser']).replace('\n', '\n\t\t\t')
+hashcat_parser = '\t\t\t'+(parsers['PARSERS']['hashcat_parser']).replace('\n', '\n\t\t\t')
+hstex_parser = '\t\t\t'+(parsers['PARSERS']['hstex_parser']).replace('\n', '\n\t\t\t')
+irec_parser = '\t\t\t'+(parsers['PARSERS']['irec_parser']).replace('\n', '\n\t\t\t')
+ive_parser = '\t\t\t'+(parsers['PARSERS']['ive_parser']).replace('\n', '\n\t\t\t')
+macquisition_parser = '\t\t\t'+(parsers['PARSERS']['macquisition_parser']).replace('\n', '\n\t\t\t')
+mobiledit_parser = '\t\t\t'+(parsers['PARSERS']['mobiledit_parser']).replace('\n', '\n\t\t\t')
+mountimagepro_parser = '\t\t\t'+(parsers['PARSERS']['mountimagepro_parser']).replace('\n', '\n\t\t\t')
+netanalysis_parser = '\t\t\t'+(parsers['PARSERS']['netanalysis_parser']).replace('\n', '\n\t\t\t')
+nirsoft_parser = '\t\t\t'+(parsers['PARSERS']['nirsoft_parser']).replace('\n', '\n\t\t\t')
+nsrl_parser = '\t\t\t'+(parsers['PARSERS']['nsrl_parser']).replace('\n', '\n\t\t\t')
+osf_parser = '\t\t\t'+(parsers['PARSERS']['osf_parser']).replace('\n', '\n\t\t\t')
+oxygen_parser = '\t\t\t'+(parsers['PARSERS']['oxygen_parser']).replace('\n', '\n\t\t\t')
+paraben_parser = '\t\t\t'+(parsers['PARSERS']['paraben_parser']).replace('\n', '\n\t\t\t')
+passware_parser = '\t\t\t'+(parsers['PARSERS']['passware_parser']).replace('\n', '\n\t\t\t')
+physicalanalyzer_parser = '\t\t\t'+(parsers['PARSERS']['physicalanalyzer_parser']).replace('\n', '\n\t\t\t')
+sleuthkit_parser = '\t\t\t'+(parsers['PARSERS']['sleuthkit_parser']).replace('\n', '\n\t\t\t')
+ufed4pc_parser = '\t\t\t'+(parsers['PARSERS']['ufed4pc_parser']).replace('\n', '\n\t\t\t')
+usbdetective_parser = '\t\t\t'+(parsers['PARSERS']['usbdetective_parser']).replace('\n', '\n\t\t\t')
+veracrypt_parser = '\t\t\t'+(parsers['PARSERS']['veracrypt_parser']).replace('\n', '\n\t\t\t')
+xamn_parser = '\t\t\t'+(parsers['PARSERS']['xamn_parser']).replace('\n', '\n\t\t\t')
+xways_parser = '\t\t\t'+(parsers['PARSERS']['xways_parser']).replace('\n', '\n\t\t\t')
 
 def spinning_cursor():
 	while True:
@@ -491,63 +290,63 @@ def crawl():
 		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36'
 	}
 	
-	all_urls = {'fvc'						:	'https://github.com/jankais3r/Forensic-Version-Checker/releases/latest',
-				'aim'						:	'https://arsenalrecon.com/downloads/',
-				'atola'						:	'https://atola.com/products/taskforce/download.html',
-				'autopsy'					:	'https://github.com/sleuthkit/autopsy/releases/latest',
-				'axiom'						:	'https://www.magnetforensics.com/downloadaxiom/',
-				'bec'						:	'https://belkasoft.com/becver.txt',
-				'blacklight'				:	'https://www.blackbagtech.com/downloads/',
-				'caine'						:	'https://distrowatch.com/table.php?distribution=caine',
-				'cyberchef'					:	'https://github.com/gchq/CyberChef/releases/latest',
-				'deft'						:	'https://distrowatch.com/table.php?distribution=deft',
-				'eift'						:	'https://www.elcomsoft.com/eift.html',
-				'encase'					:	'https://www.guidancesoftware.com/encase-forensic',
-				'exiftool'					:	'https://owl.phy.queensu.ca/~phil/exiftool/history.html',
-				'ez_amcacheparser'			:	'https://ericzimmerman.github.io/index.md',
-				'ez_appcompatcacheparser'	:	'https://ericzimmerman.github.io/index.md',
-				'ez_bstrings'				:	'https://ericzimmerman.github.io/index.md',
-				'ez_evtxex'					:	'https://ericzimmerman.github.io/index.md',
-				'ez_jlecmd'					:	'https://ericzimmerman.github.io/index.md',
-				'ez_jumplistex'				:	'https://ericzimmerman.github.io/index.md',
-				'ez_lecmd'					:	'https://ericzimmerman.github.io/index.md',
-				'ez_mftecmd'				:	'https://ericzimmerman.github.io/index.md',
-				'ez_mftexplorer'			:	'https://ericzimmerman.github.io/index.md',
-				'ez_pecmd'					:	'https://ericzimmerman.github.io/index.md',
-				'ez_rbcmd'					:	'https://ericzimmerman.github.io/index.md',
-				'ez_recentfilecacheparser'	:	'https://ericzimmerman.github.io/index.md',
-				'ez_registryex'				:	'https://ericzimmerman.github.io/index.md',
-				'ez_sdbex'					:	'https://ericzimmerman.github.io/index.md',
-				'ez_shellbagex'				:	'https://ericzimmerman.github.io/index.md',
-				'ez_timelineex'				:	'https://ericzimmerman.github.io/index.md',
-				'ez_vscmount'				:	'https://ericzimmerman.github.io/index.md',
-				'ez_wxtcmd'					:	'https://ericzimmerman.github.io/index.md',
-				'fec'						:	'https://www.metaspike.com/fec-change-log/',
-				'forensicexplorer'			:	'http://www.forensicexplorer.com/version.php',
-				'ffn'						:	'http://updates.logicube.com/Falcon-Neo/',
-				'ftk'						:	'https://accessdata.com/product-download',
-				'ftkimager'					:	'https://accessdata.com/product-download',
-				'hashcat'					:	'https://hashcat.net/beta/',
-				'hstex'						:	'https://www.digital-detective.net/start/hstex-quick-start/',
-				'irec'						:	'http://www.binalyze.com/check-update/1/',
-				'ive'						:	'https://berla.co/customer-support/',
-				'macquisition'				:	'https://www.blackbagtech.com/downloads/',
-				'mobiledit'					:	'https://www.mobiledit.com/downloads',
-				'mountimagepro'				:	'http://www.mountimage.com/download-computer-forensics-software.php',
-				'netanalysis'				:	'https://www.digital-detective.net/start/netanalysis-quick-start/',
-				'nirsoft'					:	'https://launcher.nirsoft.net/downloads/index.html',
-				'nsrl'						:	'https://s3.amazonaws.com/rds.nsrl.nist.gov/RDS/current/README.txt',
-				'osf'						:	'https://www.passmark.com/padfiles/osforensics.xml',
-				'oxygen'					:	'https://oxygen-forensic.com/update/oxydetective.inf',
-				'paraben'					:	'https://paraben.com/paraben-downloads/',
-				'passware'					:	'https://account.passware.com/products/changelog/55',
-				'physicalanalyzer'			:	'https://cdn5.cellebrite.org/Forensic/Physical%20Analyzer/_Manifest/PhysicalAnalyzer.xml',
-				'sleuthkit'					:	'https://github.com/sleuthkit/sleuthkit/releases/latest',
-				'ufed4pc'					:	'https://cdn5.cellebrite.org/Forensic/UFED/_Manifest/update.UFED4PC',
-				'usbdetective'				:	'https://usbdetective.com/release-notes/',
-				'veracrypt'					:	'https://www.veracrypt.fr/en/Downloads.html',
-				'xamn'						:	'https://www.msab.com/downloads/',
-				'xways'						:	'https://www.x-ways.net/forensics/index-m.html'
+	all_urls = {'fvc'						:	parsers['URLS']['fvc'],
+				'aim'						:	parsers['URLS']['aim'],
+				'atola'						:	parsers['URLS']['atola'],
+				'autopsy'					:	parsers['URLS']['autopsy'],
+				'axiom'						:	parsers['URLS']['axiom'],
+				'bec'						:	parsers['URLS']['bec'],
+				'blacklight'				:	parsers['URLS']['blacklight'],
+				'caine'						:	parsers['URLS']['caine'],
+				'cyberchef'					:	parsers['URLS']['cyberchef'],
+				'deft'						:	parsers['URLS']['deft'],
+				'eift'						:	parsers['URLS']['eift'],
+				'encase'					:	parsers['URLS']['encase'],
+				'exiftool'					:	parsers['URLS']['exiftool'],
+				'ez_amcacheparser'			:	parsers['URLS']['ez_amcacheparser'],
+				'ez_appcompatcacheparser'	:	parsers['URLS']['ez_appcompatcacheparser'],
+				'ez_bstrings'				:	parsers['URLS']['ez_bstrings'],
+				'ez_evtxex'					:	parsers['URLS']['ez_evtxex'],
+				'ez_jlecmd'					:	parsers['URLS']['ez_jlecmd'],
+				'ez_jumplistex'				:	parsers['URLS']['ez_jumplistex'],
+				'ez_lecmd'					:	parsers['URLS']['ez_lecmd'],
+				'ez_mftecmd'				:	parsers['URLS']['ez_mftecmd'],
+				'ez_mftexplorer'			:	parsers['URLS']['ez_mftexplorer'],
+				'ez_pecmd'					:	parsers['URLS']['ez_pecmd'],
+				'ez_rbcmd'					:	parsers['URLS']['ez_rbcmd'],
+				'ez_recentfilecacheparser'	:	parsers['URLS']['ez_recentfilecacheparser'],
+				'ez_registryex'				:	parsers['URLS']['ez_registryex'],
+				'ez_sdbex'					:	parsers['URLS']['ez_sdbex'],
+				'ez_shellbagex'				:	parsers['URLS']['ez_shellbagex'],
+				'ez_timelineex'				:	parsers['URLS']['ez_timelineex'],
+				'ez_vscmount'				:	parsers['URLS']['ez_vscmount'],
+				'ez_wxtcmd'					:	parsers['URLS']['ez_wxtcmd'],
+				'fec'						:	parsers['URLS']['fec'],
+				'forensicexplorer'			:	parsers['URLS']['forensicexplorer'],
+				'ffn'						:	parsers['URLS']['ffn'],
+				'ftk'						:	parsers['URLS']['ftk'],
+				'ftkimager'					:	parsers['URLS']['ftkimager'],
+				'hashcat'					:	parsers['URLS']['hashcat'],
+				'hstex'						:	parsers['URLS']['hstex'],
+				'irec'						:	parsers['URLS']['irec'],
+				'ive'						:	parsers['URLS']['ive'],
+				'macquisition'				:	parsers['URLS']['macquisition'],
+				'mobiledit'					:	parsers['URLS']['mobiledit'],
+				'mountimagepro'				:	parsers['URLS']['mountimagepro'],
+				'netanalysis'				:	parsers['URLS']['netanalysis'],
+				'nirsoft'					:	parsers['URLS']['nirsoft'],
+				'nsrl'						:	parsers['URLS']['nsrl'],
+				'osf'						:	parsers['URLS']['osf'],
+				'oxygen'					:	parsers['URLS']['oxygen'],
+				'paraben'					:	parsers['URLS']['paraben'],
+				'passware'					:	parsers['URLS']['passware'],
+				'physicalanalyzer'			:	parsers['URLS']['physicalanalyzer'],
+				'sleuthkit'					:	parsers['URLS']['sleuthkit'],
+				'ufed4pc'					:	parsers['URLS']['ufed4pc'],
+				'usbdetective'				:	parsers['URLS']['usbdetective'],
+				'veracrypt'					:	parsers['URLS']['veracrypt'],
+				'xamn'						:	parsers['URLS']['xamn'],
+				'xways'						:	parsers['URLS']['xways']
 	}
 	
 	urls = []
@@ -650,8 +449,8 @@ def refresh_gui():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version = '1.10'
-	if version != '1.10':
+		version = '1.11'
+	if version != '1.11':
 		about.configure(text = 'Update FVC', fg = 'blue', cursor = 'hand2')
 		about.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new('https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'))
 	
@@ -801,8 +600,8 @@ def run_cli():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version = '1.10'
-	if (version == '1.10'):
+		version = '1.11'
+	if (version == '1.11'):
 		pass
 	else:
 		print('')
@@ -824,7 +623,7 @@ config['CURRENT'][\'''' + tool + '''\'] = ''' + tool + '''_current.get()
 	gui_toggle.configure(state = 'normal')
 
 def about_box():
-	messagebox.showinfo('About', 'Forensic Version Checker v1.10\n\n\
+	messagebox.showinfo('About', 'Forensic Version Checker v1.11\n\n\
 Tool\'s homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\n\
 Digital Forensics Discord:\nhttps://discord.gg/pNMZunG')
 
@@ -852,6 +651,7 @@ except:
 
 if gui != 'CLI mode':
 	root = Tk()
+	root.attributes('-alpha', 0)
 	root.title('Forensic Version Checker')
 	
 	sf = ScrolledFrame(root, scrollbars = 'vertical')
@@ -997,13 +797,14 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	root.update()
 	max_heigth = get_max_height()
 	
-	if (inner_frame.winfo_height() > (max_heigth - 50)) and max_heigth != 200:
-		sf.configure(height = max_heigth - 50, width = inner_frame.winfo_width() + 20)
+	if (inner_frame.winfo_height() > (max_heigth - 100)) and max_heigth != 200:
+		sf.configure(height = max_heigth - 100, width = inner_frame.winfo_width() + 20)
 		root.resizable(False, True)
 	else:
 		sf.configure(height = inner_frame.winfo_height(), width = inner_frame.winfo_width() + 20)
 		root.resizable(False, True)
 	
+	root.attributes('-alpha', 1)
 	root.lift()
 	root.attributes('-topmost', True)
 	root.attributes('-topmost', False)
