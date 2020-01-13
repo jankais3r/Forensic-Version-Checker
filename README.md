@@ -71,3 +71,7 @@ pip3 install tkScrolledFrame
 - Ubuntu WSL (requires X server, e.g. Xming)
 - Ubuntu 18.04
 - macOS Mojave
+
+You can create the following shortcut to launch FVC on Windows without having the Python console displayed (GUI-only mode).
+
+![FVC shortcut](https://github.com/jankais3r/Forensic-Version-Checker/blob/master/shortcut.png)
