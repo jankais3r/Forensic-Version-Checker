@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import time
+import zlib
 import queue
 import base64
 import webbrowser
@@ -74,6 +76,7 @@ ez_wxtcmd =
 fec = 
 forensicexplorer = 
 ffn = 
+fresponse = 
 ftk = 
 ftkimager = 
 hashcat = 
@@ -120,18 +123,26 @@ used_tools = []
 used_tools_counter = 1
 
 try:
-	parsers_url = ['https://raw.githubusercontent.com/jankais3r/Forensic-Version-Checker/master/parsers.ini']
+	parsers_url = ['https://raw.githubusercontent.com/jankais3r/Forensic-Version-Checker/master/parsers.ini',
+					'https://api.github.com/repos/jankais3r/Forensic-Version-Checker/commits?path=parsers.ini']
 	parsers_get = (grequests.get(u) for u in parsers_url)
 	parsers_responses = grequests.map(parsers_get)
-	for r in parsers_responses:
-		if r.status_code == 200:
-			parsersfile = open('parsers.ini', 'wb')
-			parsersfile.write(r.content)
-			parsersfile.close()
-			r.close()
-		else:
-			print('Couldn\'t download parser definitions. Please check your Internet connection.')
-			quit()
+	for idx, r in enumerate(parsers_responses):
+		if idx == 0:
+			if r.status_code == 200:
+				parsersfile = open('parsers.ini', 'wb')
+				parsersfile.write(r.content)
+				parsersfile.close()
+				r.close()
+			else:
+				print('Couldn\'t download parser definitions. Please check your Internet connection.')
+				quit()
+		if idx == 1:
+			soup = r.content.decode('utf-8')
+			parsers_date = str(soup[soup.find('"date":"') + 8:soup.find('T', soup.find('"date":"') + 8)])
+			first_message = soup.find('"message":"') + 11
+			parsers_changes = str(soup[first_message:soup.find('",', first_message)])
+			parsers_previous_changes = str(soup[soup.find('"message":"', first_message) + 11:soup.find('",', soup.find('"message":"', first_message) + 11)])
 except:
 	print('Couldn\'t download parser definitions. Please check your Internet connection.')
 	quit()
@@ -139,62 +150,63 @@ except:
 parsers = configparser.ConfigParser()
 parsers.read('parsers.ini')
 
-aim_parser = '\t\t\t'+(parsers['PARSERS']['aim_parser']).replace('\n', '\n\t\t\t')
-atola_parser = '\t\t\t'+(parsers['PARSERS']['atola_parser']).replace('\n', '\n\t\t\t')
-autopsy_parser = '\t\t\t'+(parsers['PARSERS']['autopsy_parser']).replace('\n', '\n\t\t\t')
-axiom_parser = '\t\t\t'+(parsers['PARSERS']['axiom_parser']).replace('\n', '\n\t\t\t')
-bec_parser = '\t\t\t'+(parsers['PARSERS']['bec_parser']).replace('\n', '\n\t\t\t')
-blacklight_parser = '\t\t\t'+(parsers['PARSERS']['blacklight_parser']).replace('\n', '\n\t\t\t')
-caine_parser = '\t\t\t'+(parsers['PARSERS']['caine_parser']).replace('\n', '\n\t\t\t')
-cyberchef_parser = '\t\t\t'+(parsers['PARSERS']['cyberchef_parser']).replace('\n', '\n\t\t\t')
-deft_parser = '\t\t\t'+(parsers['PARSERS']['deft_parser']).replace('\n', '\n\t\t\t')
-eift_parser = '\t\t\t'+(parsers['PARSERS']['eift_parser']).replace('\n', '\n\t\t\t')
-encase_parser = '\t\t\t'+(parsers['PARSERS']['encase_parser']).replace('\n', '\n\t\t\t')
-exiftool_parser = '\t\t\t'+(parsers['PARSERS']['exiftool_parser']).replace('\n', '\n\t\t\t')
-ez_amcacheparser_parser = '\t\t\t'+(parsers['PARSERS']['ez_amcacheparser_parser']).replace('\n', '\n\t\t\t')
-ez_appcompatcacheparser_parser = '\t\t\t'+(parsers['PARSERS']['ez_appcompatcacheparser_parser']).replace('\n', '\n\t\t\t')
-ez_bstrings_parser = '\t\t\t'+(parsers['PARSERS']['ez_bstrings_parser']).replace('\n', '\n\t\t\t')
-ez_evtxex_parser = '\t\t\t'+(parsers['PARSERS']['ez_evtxex_parser']).replace('\n', '\n\t\t\t')
-ez_jlecmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_jlecmd_parser']).replace('\n', '\n\t\t\t')
-ez_jumplistex_parser = '\t\t\t'+(parsers['PARSERS']['ez_jumplistex_parser']).replace('\n', '\n\t\t\t')
-ez_lecmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_lecmd_parser']).replace('\n', '\n\t\t\t')
-ez_mftecmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_mftecmd_parser']).replace('\n', '\n\t\t\t')
-ez_mftexplorer_parser = '\t\t\t'+(parsers['PARSERS']['ez_mftexplorer_parser']).replace('\n', '\n\t\t\t')
-ez_pecmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_pecmd_parser']).replace('\n', '\n\t\t\t')
-ez_rbcmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_rbcmd_parser']).replace('\n', '\n\t\t\t')
-ez_recentfilecacheparser_parser = '\t\t\t'+(parsers['PARSERS']['ez_recentfilecacheparser_parser']).replace('\n', '\n\t\t\t')
-ez_registryex_parser = '\t\t\t'+(parsers['PARSERS']['ez_registryex_parser']).replace('\n', '\n\t\t\t')
-ez_sdbex_parser = '\t\t\t'+(parsers['PARSERS']['ez_sdbex_parser']).replace('\n', '\n\t\t\t')
-ez_shellbagex_parser = '\t\t\t'+(parsers['PARSERS']['ez_shellbagex_parser']).replace('\n', '\n\t\t\t')
-ez_timelineex_parser = '\t\t\t'+(parsers['PARSERS']['ez_timelineex_parser']).replace('\n', '\n\t\t\t')
-ez_vscmount_parser = '\t\t\t'+(parsers['PARSERS']['ez_vscmount_parser']).replace('\n', '\n\t\t\t')
-ez_wxtcmd_parser = '\t\t\t'+(parsers['PARSERS']['ez_wxtcmd_parser']).replace('\n', '\n\t\t\t')
-fec_parser = '\t\t\t'+(parsers['PARSERS']['fec_parser']).replace('\n', '\n\t\t\t')
-forensicexplorer_parser = '\t\t\t'+(parsers['PARSERS']['forensicexplorer_parser']).replace('\n', '\n\t\t\t')
-ffn_parser = '\t\t\t'+(parsers['PARSERS']['ffn_parser']).replace('\n', '\n\t\t\t')
-ftk_parser = '\t\t\t'+(parsers['PARSERS']['ftk_parser']).replace('\n', '\n\t\t\t')
-ftkimager_parser = '\t\t\t'+(parsers['PARSERS']['ftkimager_parser']).replace('\n', '\n\t\t\t')
-hashcat_parser = '\t\t\t'+(parsers['PARSERS']['hashcat_parser']).replace('\n', '\n\t\t\t')
-hstex_parser = '\t\t\t'+(parsers['PARSERS']['hstex_parser']).replace('\n', '\n\t\t\t')
-irec_parser = '\t\t\t'+(parsers['PARSERS']['irec_parser']).replace('\n', '\n\t\t\t')
-ive_parser = '\t\t\t'+(parsers['PARSERS']['ive_parser']).replace('\n', '\n\t\t\t')
-macquisition_parser = '\t\t\t'+(parsers['PARSERS']['macquisition_parser']).replace('\n', '\n\t\t\t')
-mobiledit_parser = '\t\t\t'+(parsers['PARSERS']['mobiledit_parser']).replace('\n', '\n\t\t\t')
-mountimagepro_parser = '\t\t\t'+(parsers['PARSERS']['mountimagepro_parser']).replace('\n', '\n\t\t\t')
-netanalysis_parser = '\t\t\t'+(parsers['PARSERS']['netanalysis_parser']).replace('\n', '\n\t\t\t')
-nirsoft_parser = '\t\t\t'+(parsers['PARSERS']['nirsoft_parser']).replace('\n', '\n\t\t\t')
-nsrl_parser = '\t\t\t'+(parsers['PARSERS']['nsrl_parser']).replace('\n', '\n\t\t\t')
-osf_parser = '\t\t\t'+(parsers['PARSERS']['osf_parser']).replace('\n', '\n\t\t\t')
-oxygen_parser = '\t\t\t'+(parsers['PARSERS']['oxygen_parser']).replace('\n', '\n\t\t\t')
-paraben_parser = '\t\t\t'+(parsers['PARSERS']['paraben_parser']).replace('\n', '\n\t\t\t')
-passware_parser = '\t\t\t'+(parsers['PARSERS']['passware_parser']).replace('\n', '\n\t\t\t')
-physicalanalyzer_parser = '\t\t\t'+(parsers['PARSERS']['physicalanalyzer_parser']).replace('\n', '\n\t\t\t')
-sleuthkit_parser = '\t\t\t'+(parsers['PARSERS']['sleuthkit_parser']).replace('\n', '\n\t\t\t')
-ufed4pc_parser = '\t\t\t'+(parsers['PARSERS']['ufed4pc_parser']).replace('\n', '\n\t\t\t')
-usbdetective_parser = '\t\t\t'+(parsers['PARSERS']['usbdetective_parser']).replace('\n', '\n\t\t\t')
-veracrypt_parser = '\t\t\t'+(parsers['PARSERS']['veracrypt_parser']).replace('\n', '\n\t\t\t')
-xamn_parser = '\t\t\t'+(parsers['PARSERS']['xamn_parser']).replace('\n', '\n\t\t\t')
-xways_parser = '\t\t\t'+(parsers['PARSERS']['xways_parser']).replace('\n', '\n\t\t\t')
+aim_parser = (parsers['PARSERS']['aim_parser']).replace('\\t', '\t')
+atola_parser = (parsers['PARSERS']['atola_parser']).replace('\\t', '\t')
+autopsy_parser = (parsers['PARSERS']['autopsy_parser']).replace('\\t', '\t')
+axiom_parser = (parsers['PARSERS']['axiom_parser']).replace('\\t', '\t')
+bec_parser = (parsers['PARSERS']['bec_parser']).replace('\\t', '\t')
+blacklight_parser = (parsers['PARSERS']['blacklight_parser']).replace('\\t', '\t')
+caine_parser = (parsers['PARSERS']['caine_parser']).replace('\\t', '\t')
+cyberchef_parser = (parsers['PARSERS']['cyberchef_parser']).replace('\\t', '\t')
+deft_parser = (parsers['PARSERS']['deft_parser']).replace('\\t', '\t')
+eift_parser = (parsers['PARSERS']['eift_parser']).replace('\\t', '\t')
+encase_parser = (parsers['PARSERS']['encase_parser']).replace('\\t', '\t')
+exiftool_parser = (parsers['PARSERS']['exiftool_parser']).replace('\\t', '\t')
+ez_amcacheparser_parser = (parsers['PARSERS']['ez_amcacheparser_parser']).replace('\\t', '\t')
+ez_appcompatcacheparser_parser = (parsers['PARSERS']['ez_appcompatcacheparser_parser']).replace('\\t', '\t')
+ez_bstrings_parser = (parsers['PARSERS']['ez_bstrings_parser']).replace('\\t', '\t')
+ez_evtxex_parser = (parsers['PARSERS']['ez_evtxex_parser']).replace('\\t', '\t')
+ez_jlecmd_parser = (parsers['PARSERS']['ez_jlecmd_parser']).replace('\\t', '\t')
+ez_jumplistex_parser = (parsers['PARSERS']['ez_jumplistex_parser']).replace('\\t', '\t')
+ez_lecmd_parser = (parsers['PARSERS']['ez_lecmd_parser']).replace('\\t', '\t')
+ez_mftecmd_parser = (parsers['PARSERS']['ez_mftecmd_parser']).replace('\\t', '\t')
+ez_mftexplorer_parser = (parsers['PARSERS']['ez_mftexplorer_parser']).replace('\\t', '\t')
+ez_pecmd_parser = (parsers['PARSERS']['ez_pecmd_parser']).replace('\\t', '\t')
+ez_rbcmd_parser = (parsers['PARSERS']['ez_rbcmd_parser']).replace('\\t', '\t')
+ez_recentfilecacheparser_parser = (parsers['PARSERS']['ez_recentfilecacheparser_parser']).replace('\\t', '\t')
+ez_registryex_parser = (parsers['PARSERS']['ez_registryex_parser']).replace('\\t', '\t')
+ez_sdbex_parser = (parsers['PARSERS']['ez_sdbex_parser']).replace('\\t', '\t')
+ez_shellbagex_parser = (parsers['PARSERS']['ez_shellbagex_parser']).replace('\\t', '\t')
+ez_timelineex_parser = (parsers['PARSERS']['ez_timelineex_parser']).replace('\\t', '\t')
+ez_vscmount_parser = (parsers['PARSERS']['ez_vscmount_parser']).replace('\\t', '\t')
+ez_wxtcmd_parser = (parsers['PARSERS']['ez_wxtcmd_parser']).replace('\\t', '\t')
+fec_parser = (parsers['PARSERS']['fec_parser']).replace('\\t', '\t')
+forensicexplorer_parser = (parsers['PARSERS']['forensicexplorer_parser']).replace('\\t', '\t')
+ffn_parser = (parsers['PARSERS']['ffn_parser']).replace('\\t', '\t')
+fresponse_parser = (parsers['PARSERS']['fresponse_parser']).replace('\\t', '\t')
+ftk_parser = (parsers['PARSERS']['ftk_parser']).replace('\\t', '\t')
+ftkimager_parser = (parsers['PARSERS']['ftkimager_parser']).replace('\\t', '\t')
+hashcat_parser = (parsers['PARSERS']['hashcat_parser']).replace('\\t', '\t')
+hstex_parser = (parsers['PARSERS']['hstex_parser']).replace('\\t', '\t')
+irec_parser = (parsers['PARSERS']['irec_parser']).replace('\\t', '\t')
+ive_parser = (parsers['PARSERS']['ive_parser']).replace('\\t', '\t')
+macquisition_parser = (parsers['PARSERS']['macquisition_parser']).replace('\\t', '\t')
+mobiledit_parser = (parsers['PARSERS']['mobiledit_parser']).replace('\\t', '\t')
+mountimagepro_parser = (parsers['PARSERS']['mountimagepro_parser']).replace('\\t', '\t')
+netanalysis_parser = (parsers['PARSERS']['netanalysis_parser']).replace('\\t', '\t')
+nirsoft_parser = (parsers['PARSERS']['nirsoft_parser']).replace('\\t', '\t')
+nsrl_parser = (parsers['PARSERS']['nsrl_parser']).replace('\\t', '\t')
+osf_parser = (parsers['PARSERS']['osf_parser']).replace('\\t', '\t')
+oxygen_parser = (parsers['PARSERS']['oxygen_parser']).replace('\\t', '\t')
+paraben_parser = (parsers['PARSERS']['paraben_parser']).replace('\\t', '\t')
+passware_parser = (parsers['PARSERS']['passware_parser']).replace('\\t', '\t')
+physicalanalyzer_parser = (parsers['PARSERS']['physicalanalyzer_parser']).replace('\\t', '\t')
+sleuthkit_parser = (parsers['PARSERS']['sleuthkit_parser']).replace('\\t', '\t')
+ufed4pc_parser = (parsers['PARSERS']['ufed4pc_parser']).replace('\\t', '\t')
+usbdetective_parser = (parsers['PARSERS']['usbdetective_parser']).replace('\\t', '\t')
+veracrypt_parser = (parsers['PARSERS']['veracrypt_parser']).replace('\\t', '\t')
+xamn_parser = (parsers['PARSERS']['xamn_parser']).replace('\\t', '\t')
+xways_parser = (parsers['PARSERS']['xways_parser']).replace('\\t', '\t')
 
 def spinning_cursor():
 	while True:
@@ -324,6 +336,7 @@ def crawl():
 				'fec'						:	parsers['URLS']['fec'],
 				'forensicexplorer'			:	parsers['URLS']['forensicexplorer'],
 				'ffn'						:	parsers['URLS']['ffn'],
+				'fresponse'					:	parsers['URLS']['fresponse'],
 				'ftk'						:	parsers['URLS']['ftk'],
 				'ftkimager'					:	parsers['URLS']['ftkimager'],
 				'hashcat'					:	parsers['URLS']['hashcat'],
@@ -419,6 +432,7 @@ def refresh_gui():
 	update_gui('fec', fec_parser)
 	update_gui('forensicexplorer', forensicexplorer_parser)
 	update_gui('ffn', ffn_parser)
+	update_gui('fresponse', fresponse_parser)
 	update_gui('ftk', ftk_parser)
 	update_gui('ftkimager', ftkimager_parser)
 	update_gui('hashcat', hashcat_parser)
@@ -449,8 +463,8 @@ def refresh_gui():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version = '1.11'
-	if version != '1.11':
+		version = '1.12'
+	if version != '1.12':
 		about.configure(text = 'Update FVC', fg = 'blue', cursor = 'hand2')
 		about.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new('https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'))
 	
@@ -497,6 +511,7 @@ def run_cli():
 	gather_used_tools('fec')
 	gather_used_tools('forensicexplorer')
 	gather_used_tools('ffn')
+	gather_used_tools('fresponse')
 	gather_used_tools('ftk')
 	gather_used_tools('ftkimager')
 	gather_used_tools('hashcat')
@@ -568,6 +583,7 @@ def run_cli():
 	update_cli('fec', 'Forensic Email Collector', fec_parser)
 	update_cli('forensicexplorer', 'Forensic Explorer', forensicexplorer_parser)
 	update_cli('ffn', 'Forensic Falcon Neo', ffn_parser)
+	update_cli('fresponse', 'F-Response', fresponse_parser)
 	update_cli('ftk', 'FTK', ftk_parser)
 	update_cli('ftkimager', 'FTK Imager', ftkimager_parser)
 	update_cli('hashcat', 'hashcat', hashcat_parser)
@@ -600,8 +616,8 @@ def run_cli():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version = '1.11'
-	if (version == '1.11'):
+		version = '1.12'
+	if (version == '1.12'):
 		pass
 	else:
 		print('')
@@ -623,7 +639,10 @@ config['CURRENT'][\'''' + tool + '''\'] = ''' + tool + '''_current.get()
 	gui_toggle.configure(state = 'normal')
 
 def about_box():
-	messagebox.showinfo('About', 'Forensic Version Checker v1.11\n\n\
+	messagebox.showinfo('About', 'Forensic Version Checker v1.12\n\n\
+Latest parsers.ini update on: ' + parsers_date + '\n\
+Latest changes: ' + parsers_changes + '\n\
+Previous changes:  ' + parsers_previous_changes + '\n\n\
 Tool\'s homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\n\
 Digital Forensics Discord:\nhttps://discord.gg/pNMZunG')
 
@@ -745,6 +764,7 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	build_gui('fec', 'Forensic Email Collector', 'http://www.metaspike.com/fec-change-log/')
 	build_gui('forensicexplorer', 'Forensic Explorer', 'http://www.forensicexplorer.com/download.php')
 	build_gui('ffn', 'Forensic Falcon Neo', 'https://www.logicube.com/knowledge/forensic-falcon-neo/')
+	build_gui('fresponse', 'F-Response', 'https://www.f-response.com/support/downloads')
 	build_gui('ftk', 'FTK', 'https://accessdata.com/product-download')
 	build_gui('ftkimager', 'FTK Imager', 'https://accessdata.com/product-download')
 	build_gui('hashcat', 'hashcat', 'https://hashcat.net/beta/')
