@@ -23,6 +23,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - Forensic Email Collector
 - Forensic Explorer
 - Forensic Falcon Neo
+- F-Response
 - FTK
 - FTK Imager
 - hashcat
