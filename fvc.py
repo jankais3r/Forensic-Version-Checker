@@ -46,6 +46,7 @@ gui = Display all
 aim = 
 atola = 
 autopsy = 
+avml = 
 axiom = 
 bec = 
 blacklight = 
@@ -83,6 +84,7 @@ hashcat =
 hstex = 
 irec = 
 ive = 
+lime = 
 macquisition = 
 mobiledit = 
 mountimagepro = 
@@ -95,6 +97,7 @@ paraben =
 passware = 
 physicalanalyzer = 
 sleuthkit = 
+tzworks = 
 ufed4pc = 
 usbdetective = 
 veracrypt = 
@@ -153,6 +156,7 @@ parsers.read('parsers.ini')
 aim_parser = (parsers['PARSERS']['aim_parser']).replace('\\t', '\t')
 atola_parser = (parsers['PARSERS']['atola_parser']).replace('\\t', '\t')
 autopsy_parser = (parsers['PARSERS']['autopsy_parser']).replace('\\t', '\t')
+avml_parser = (parsers['PARSERS']['avml_parser']).replace('\\t', '\t')
 axiom_parser = (parsers['PARSERS']['axiom_parser']).replace('\\t', '\t')
 bec_parser = (parsers['PARSERS']['bec_parser']).replace('\\t', '\t')
 blacklight_parser = (parsers['PARSERS']['blacklight_parser']).replace('\\t', '\t')
@@ -190,6 +194,7 @@ hashcat_parser = (parsers['PARSERS']['hashcat_parser']).replace('\\t', '\t')
 hstex_parser = (parsers['PARSERS']['hstex_parser']).replace('\\t', '\t')
 irec_parser = (parsers['PARSERS']['irec_parser']).replace('\\t', '\t')
 ive_parser = (parsers['PARSERS']['ive_parser']).replace('\\t', '\t')
+lime_parser = (parsers['PARSERS']['lime_parser']).replace('\\t', '\t')
 macquisition_parser = (parsers['PARSERS']['macquisition_parser']).replace('\\t', '\t')
 mobiledit_parser = (parsers['PARSERS']['mobiledit_parser']).replace('\\t', '\t')
 mountimagepro_parser = (parsers['PARSERS']['mountimagepro_parser']).replace('\\t', '\t')
@@ -202,6 +207,7 @@ paraben_parser = (parsers['PARSERS']['paraben_parser']).replace('\\t', '\t')
 passware_parser = (parsers['PARSERS']['passware_parser']).replace('\\t', '\t')
 physicalanalyzer_parser = (parsers['PARSERS']['physicalanalyzer_parser']).replace('\\t', '\t')
 sleuthkit_parser = (parsers['PARSERS']['sleuthkit_parser']).replace('\\t', '\t')
+tzworks_parser = (parsers['PARSERS']['tzworks_parser']).replace('\\t', '\t')
 ufed4pc_parser = (parsers['PARSERS']['ufed4pc_parser']).replace('\\t', '\t')
 usbdetective_parser = (parsers['PARSERS']['usbdetective_parser']).replace('\\t', '\t')
 veracrypt_parser = (parsers['PARSERS']['veracrypt_parser']).replace('\\t', '\t')
@@ -306,6 +312,7 @@ def crawl():
 				'aim'						:	parsers['URLS']['aim'],
 				'atola'						:	parsers['URLS']['atola'],
 				'autopsy'					:	parsers['URLS']['autopsy'],
+				'avml'						:	parsers['URLS']['avml'],
 				'axiom'						:	parsers['URLS']['axiom'],
 				'bec'						:	parsers['URLS']['bec'],
 				'blacklight'				:	parsers['URLS']['blacklight'],
@@ -343,6 +350,7 @@ def crawl():
 				'hstex'						:	parsers['URLS']['hstex'],
 				'irec'						:	parsers['URLS']['irec'],
 				'ive'						:	parsers['URLS']['ive'],
+				'lime'						:	parsers['URLS']['lime'],
 				'macquisition'				:	parsers['URLS']['macquisition'],
 				'mobiledit'					:	parsers['URLS']['mobiledit'],
 				'mountimagepro'				:	parsers['URLS']['mountimagepro'],
@@ -355,6 +363,7 @@ def crawl():
 				'passware'					:	parsers['URLS']['passware'],
 				'physicalanalyzer'			:	parsers['URLS']['physicalanalyzer'],
 				'sleuthkit'					:	parsers['URLS']['sleuthkit'],
+				'tzworks'					:	parsers['URLS']['tzworks'],
 				'ufed4pc'					:	parsers['URLS']['ufed4pc'],
 				'usbdetective'				:	parsers['URLS']['usbdetective'],
 				'veracrypt'					:	parsers['URLS']['veracrypt'],
@@ -402,6 +411,7 @@ def refresh_gui():
 	update_gui('aim', aim_parser)	
 	update_gui('atola', atola_parser)
 	update_gui('autopsy', autopsy_parser)
+	update_gui('avml', avml_parser)
 	update_gui('axiom', axiom_parser)
 	update_gui('bec', bec_parser)
 	update_gui('blacklight', blacklight_parser)
@@ -439,6 +449,7 @@ def refresh_gui():
 	update_gui('hstex', hstex_parser)
 	update_gui('irec', irec_parser)
 	update_gui('ive', ive_parser)
+	update_gui('lime', lime_parser)
 	update_gui('macquisition', macquisition_parser)
 	update_gui('mobiledit', mobiledit_parser)
 	update_gui('mountimagepro', mountimagepro_parser)
@@ -451,6 +462,7 @@ def refresh_gui():
 	update_gui('passware', passware_parser)
 	update_gui('physicalanalyzer', physicalanalyzer_parser)
 	update_gui('sleuthkit', sleuthkit_parser)
+	update_gui('tzworks', tzworks_parser)
 	update_gui('ufed4pc', ufed4pc_parser)
 	update_gui('usbdetective', usbdetective_parser)
 	update_gui('veracrypt', veracrypt_parser)
@@ -481,6 +493,7 @@ def run_cli():
 	gather_used_tools('aim')
 	gather_used_tools('atola')
 	gather_used_tools('autopsy')
+	gather_used_tools('avml')
 	gather_used_tools('axiom')
 	gather_used_tools('bec')
 	gather_used_tools('blacklight')
@@ -518,6 +531,7 @@ def run_cli():
 	gather_used_tools('hstex')
 	gather_used_tools('irec')
 	gather_used_tools('ive')
+	gather_used_tools('lime')
 	gather_used_tools('macquisition')
 	gather_used_tools('mobiledit')
 	gather_used_tools('mountimagepro')
@@ -530,6 +544,7 @@ def run_cli():
 	gather_used_tools('passware')
 	gather_used_tools('physicalanalyzer')
 	gather_used_tools('sleuthkit')
+	gather_used_tools('tzworks')
 	gather_used_tools('ufed4pc')
 	gather_used_tools('usbdetective')
 	gather_used_tools('veracrypt')
@@ -553,6 +568,7 @@ def run_cli():
 	update_cli('aim', 'AIM', aim_parser)
 	update_cli('atola', 'Atola TaskForce', atola_parser)
 	update_cli('autopsy', 'Autopsy', autopsy_parser)
+	update_cli('avml', 'AVML', avml_parser)
 	update_cli('axiom', 'AXIOM', axiom_parser)
 	update_cli('bec', 'BEC', bec_parser)
 	update_cli('blacklight', 'BlackLight', blacklight_parser)
@@ -590,6 +606,7 @@ def run_cli():
 	update_cli('hstex', 'HstEx', hstex_parser)
 	update_cli('irec', 'IREC', irec_parser)
 	update_cli('ive', 'iVe', ive_parser)
+	update_cli('lime', 'LiME', lime_parser)
 	update_cli('macquisition', 'MacQuisition', macquisition_parser)
 	update_cli('mobiledit', 'MobilEdit', mobiledit_parser)
 	update_cli('mountimagepro', 'Mount Image Pro', mountimagepro_parser)
@@ -602,6 +619,7 @@ def run_cli():
 	update_cli('passware', 'Passware', passware_parser)
 	update_cli('physicalanalyzer', 'Physical Analyzer', physicalanalyzer_parser)
 	update_cli('sleuthkit', 'The Sleuth Kit', sleuthkit_parser)
+	update_cli('tzworks', 'TZWorks', tzworks_parser)
 	update_cli('ufed4pc', 'UFED 4PC', ufed4pc_parser)
 	update_cli('usbdetective', 'USB Detective', usbdetective_parser)
 	update_cli('veracrypt', 'VeraCrypt', veracrypt_parser)
@@ -734,6 +752,7 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	build_gui('aim', 'AIM', 'https://arsenalrecon.com/downloads/')
 	build_gui('atola', 'Atola TaskForce', 'https://atola.com/products/taskforce/download.html')
 	build_gui('autopsy', 'Autopsy', 'https://github.com/sleuthkit/autopsy/releases/latest')
+	build_gui('avml', 'AVML', 'https://github.com/microsoft/avml/releases/latest')
 	build_gui('axiom', 'AXIOM', 'https://www.magnetforensics.com/downloadaxiom/')
 	build_gui('bec', 'BEC', 'https://belkasoft.com/get')
 	build_gui('blacklight', 'BlackLight', 'https://www.blackbagtech.com/downloads/')
@@ -771,6 +790,7 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	build_gui('hstex', 'HstEx', 'https://www.digital-detective.net/start/hstex-quick-start/')
 	build_gui('irec', 'IREC', 'https://binalyze.com/products/irec/release-notes/')
 	build_gui('ive', 'iVe', 'https://berla.co/customer-support/')
+	build_gui('lime', 'LiME', 'https://github.com/504ensicsLabs/LiME/releases/latest')
 	build_gui('macquisition', 'MacQuisition', 'https://www.blackbagtech.com/downloads/')
 	build_gui('mobiledit', 'MobilEdit', 'https://www.mobiledit.com/downloads')
 	build_gui('mountimagepro', 'Mount Image Pro', 'http://www.forensicexplorer.com/download.php')
@@ -783,6 +803,7 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	build_gui('passware', 'Passware', 'https://www.passware.com/kit-forensic/whatsnew/')
 	build_gui('physicalanalyzer', 'Physical Analyzer', 'https://www.cellebrite.com/en/support/product-releases/')
 	build_gui('sleuthkit', 'The Sleuth Kit', 'https://github.com/sleuthkit/sleuthkit/releases/latest')
+	build_gui('tzworks', 'TZWorks', 'https://tzworks.net/download_links.php')
 	build_gui('ufed4pc', 'UFED 4PC', 'https://www.cellebrite.com/en/support/product-releases/')
 	build_gui('usbdetective', 'USB Detective', 'https://usbdetective.com/release-notes/')
 	build_gui('veracrypt', 'VeraCrypt', 'https://www.veracrypt.fr/en/Downloads.html')
