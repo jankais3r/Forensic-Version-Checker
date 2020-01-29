@@ -10,6 +10,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - Arsenal Image Mounter
 - Atola TaskForce
 - Autopsy
+- AVML
 - AXIOM
 - Belkasoft Evidence Center
 - BlackLight
@@ -30,6 +31,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - HstEx
 - IREC
 - iVe
+- LiME
 - MacQuisition
 - MobilEdit
 - Mount Image Pro
@@ -42,6 +44,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - Passware
 - Physical Analyzer
 - The Sleuth Kit
+- TZWorks
 - UFED 4PC
 - USB Detective
 - VeraCrypt
