@@ -84,6 +84,7 @@ hashcat =
 hstex = 
 irec = 
 ive = 
+kali = 
 lime = 
 macquisition = 
 mobiledit = 
@@ -194,6 +195,7 @@ hashcat_parser = (parsers['PARSERS']['hashcat_parser']).replace('\\t', '\t')
 hstex_parser = (parsers['PARSERS']['hstex_parser']).replace('\\t', '\t')
 irec_parser = (parsers['PARSERS']['irec_parser']).replace('\\t', '\t')
 ive_parser = (parsers['PARSERS']['ive_parser']).replace('\\t', '\t')
+kali_parser = (parsers['PARSERS']['kali_parser']).replace('\\t', '\t')
 lime_parser = (parsers['PARSERS']['lime_parser']).replace('\\t', '\t')
 macquisition_parser = (parsers['PARSERS']['macquisition_parser']).replace('\\t', '\t')
 mobiledit_parser = (parsers['PARSERS']['mobiledit_parser']).replace('\\t', '\t')
@@ -350,6 +352,7 @@ def crawl():
 				'hstex'						:	parsers['URLS']['hstex'],
 				'irec'						:	parsers['URLS']['irec'],
 				'ive'						:	parsers['URLS']['ive'],
+				'kali'						:	parsers['URLS']['kali'],
 				'lime'						:	parsers['URLS']['lime'],
 				'macquisition'				:	parsers['URLS']['macquisition'],
 				'mobiledit'					:	parsers['URLS']['mobiledit'],
@@ -449,6 +452,7 @@ def refresh_gui():
 	update_gui('hstex', hstex_parser)
 	update_gui('irec', irec_parser)
 	update_gui('ive', ive_parser)
+	update_gui('kali', kali_parser)
 	update_gui('lime', lime_parser)
 	update_gui('macquisition', macquisition_parser)
 	update_gui('mobiledit', mobiledit_parser)
@@ -475,8 +479,8 @@ def refresh_gui():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version = '1.13'
-	if version != '1.13':
+		version = '1.14'
+	if version != '1.14':
 		about.configure(text = 'Update FVC', fg = 'blue', cursor = 'hand2')
 		about.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new('https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'))
 	
@@ -531,6 +535,7 @@ def run_cli():
 	gather_used_tools('hstex')
 	gather_used_tools('irec')
 	gather_used_tools('ive')
+	gather_used_tools('kali')
 	gather_used_tools('lime')
 	gather_used_tools('macquisition')
 	gather_used_tools('mobiledit')
@@ -578,24 +583,24 @@ def run_cli():
 	update_cli('eift', 'EIFT', eift_parser)
 	update_cli('encase', 'Encase', encase_parser)
 	update_cli('exiftool', 'ExifTool', exiftool_parser)
-	update_cli('ez_amcacheparser', 'EZ AmcacheParser',  ez_amcacheparser_parser)
-	update_cli('ez_appcompatcacheparser', 'EZ AppCompatCacheParser',  ez_appcompatcacheparser_parser)
-	update_cli('ez_bstrings', 'EZ bstrings',  ez_bstrings_parser)
-	update_cli('ez_evtxex', 'EZ Evtx Explorer/EvtxECmd',  ez_evtxex_parser)
-	update_cli('ez_jlecmd', 'EZ JLECmd',  ez_jlecmd_parser)
-	update_cli('ez_jumplistex', 'EZ JumpList Explorer',  ez_jumplistex_parser)
-	update_cli('ez_lecmd', 'EZ LECmd',  ez_lecmd_parser)
-	update_cli('ez_mftecmd', 'EZ MFTECmd',  ez_mftecmd_parser)
-	update_cli('ez_mftexplorer', 'EZ MFTExplorer',  ez_mftexplorer_parser)
-	update_cli('ez_pecmd', 'EZ PECmd',  ez_pecmd_parser)
-	update_cli('ez_rbcmd', 'EZ RBCmd',  ez_rbcmd_parser)
-	update_cli('ez_recentfilecacheparser', 'EZ RecentFileCacheParser',  ez_recentfilecacheparser_parser)
-	update_cli('ez_registryex', 'EZ Registry Explorer/RECmd',  ez_registryex_parser)
-	update_cli('ez_sdbex', 'EZ SDB Explorer',  ez_sdbex_parser)
-	update_cli('ez_shellbagex', 'EZ ShellBags Explorer',  ez_shellbagex_parser)
-	update_cli('ez_timelineex', 'EZ Timeline Explorer',  ez_timelineex_parser)
-	update_cli('ez_vscmount', 'EZ VSCMount',  ez_vscmount_parser)
-	update_cli('ez_wxtcmd', 'EZ WxTCmd',  ez_wxtcmd_parser)
+	update_cli('ez_amcacheparser', 'EZ AmcacheParser', ez_amcacheparser_parser)
+	update_cli('ez_appcompatcacheparser', 'EZ AppCompatCacheParser', ez_appcompatcacheparser_parser)
+	update_cli('ez_bstrings', 'EZ bstrings', ez_bstrings_parser)
+	update_cli('ez_evtxex', 'EZ Evtx Explorer/EvtxECmd', ez_evtxex_parser)
+	update_cli('ez_jlecmd', 'EZ JLECmd', ez_jlecmd_parser)
+	update_cli('ez_jumplistex', 'EZ JumpList Explorer', ez_jumplistex_parser)
+	update_cli('ez_lecmd', 'EZ LECmd', ez_lecmd_parser)
+	update_cli('ez_mftecmd', 'EZ MFTECmd', ez_mftecmd_parser)
+	update_cli('ez_mftexplorer', 'EZ MFTExplorer', ez_mftexplorer_parser)
+	update_cli('ez_pecmd', 'EZ PECmd', ez_pecmd_parser)
+	update_cli('ez_rbcmd', 'EZ RBCmd', ez_rbcmd_parser)
+	update_cli('ez_recentfilecacheparser', 'EZ RecentFileCacheParser', ez_recentfilecacheparser_parser)
+	update_cli('ez_registryex', 'EZ Registry Explorer/RECmd', ez_registryex_parser)
+	update_cli('ez_sdbex', 'EZ SDB Explorer', ez_sdbex_parser)
+	update_cli('ez_shellbagex', 'EZ ShellBags Explorer', ez_shellbagex_parser)
+	update_cli('ez_timelineex', 'EZ Timeline Explorer', ez_timelineex_parser)
+	update_cli('ez_vscmount', 'EZ VSCMount', ez_vscmount_parser)
+	update_cli('ez_wxtcmd', 'EZ WxTCmd', ez_wxtcmd_parser)
 	update_cli('fec', 'Forensic Email Collector', fec_parser)
 	update_cli('forensicexplorer', 'Forensic Explorer', forensicexplorer_parser)
 	update_cli('ffn', 'Forensic Falcon Neo', ffn_parser)
@@ -606,6 +611,7 @@ def run_cli():
 	update_cli('hstex', 'HstEx', hstex_parser)
 	update_cli('irec', 'IREC', irec_parser)
 	update_cli('ive', 'iVe', ive_parser)
+	update_cli('kali', 'Kali', kali_parser)
 	update_cli('lime', 'LiME', lime_parser)
 	update_cli('macquisition', 'MacQuisition', macquisition_parser)
 	update_cli('mobiledit', 'MobilEdit', mobiledit_parser)
@@ -634,8 +640,8 @@ def run_cli():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version = '1.13'
-	if (version == '1.13'):
+		version = '1.14'
+	if (version == '1.14'):
 		pass
 	else:
 		print('')
@@ -657,10 +663,10 @@ config['CURRENT'][\'''' + tool + '''\'] = ''' + tool + '''_current.get()
 	gui_toggle.configure(state = 'normal')
 
 def about_box():
-	messagebox.showinfo('About', 'Forensic Version Checker v1.13\n\n\
+	messagebox.showinfo('About', 'Forensic Version Checker v1.14\n\n\
 Latest parsers.ini update on: ' + parsers_date + '\n\
 Latest changes: ' + parsers_changes + '\n\
-Previous changes:  ' + parsers_previous_changes + '\n\n\
+Previous changes: ' + parsers_previous_changes + '\n\n\
 Tool\'s homepage:\nhttps://github.com/jankais3r/Forensic-Version-Checker\n\n\
 Digital Forensics Discord:\nhttps://discord.gg/pNMZunG')
 
@@ -790,6 +796,7 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	build_gui('hstex', 'HstEx', 'https://www.digital-detective.net/start/hstex-quick-start/')
 	build_gui('irec', 'IREC', 'https://binalyze.com/products/irec/release-notes/')
 	build_gui('ive', 'iVe', 'https://berla.co/customer-support/')
+	build_gui('kali', 'Kali', 'https://www.kali.org/downloads/')
 	build_gui('lime', 'LiME', 'https://github.com/504ensicsLabs/LiME/releases/latest')
 	build_gui('macquisition', 'MacQuisition', 'https://www.blackbagtech.com/downloads/')
 	build_gui('mobiledit', 'MobilEdit', 'https://www.mobiledit.com/downloads')
