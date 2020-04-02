@@ -76,6 +76,7 @@ pip3 install tkScrolledFrame
 - Ubuntu WSL (requires X server, e.g. Xming)
 - Ubuntu 18.04
 - macOS Mojave
+- [Pythonista](https://apps.apple.com/us/app/pythonista-3/id1085978097) iOS app (use the `fvc_pythonista.py` script)
 
 You can create the following shortcut to launch FVC on Windows without having the Python console displayed (GUI-only mode).
 
