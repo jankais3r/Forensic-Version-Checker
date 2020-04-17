@@ -32,6 +32,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - IREC
 - iVe
 - Kali
+- KAPE
 - LiME
 - MacQuisition
 - MobilEdit
