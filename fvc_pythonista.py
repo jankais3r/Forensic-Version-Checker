@@ -7,24 +7,17 @@ import sys
 import time
 import queue
 import base64
+import console
+import requests
 import configparser
 from threading import Thread
+from bs4 import BeautifulSoup
 from xml.etree import ElementTree
 
 try:
 	from tabulate import tabulate
 except:
 	print('Install tabulate using StaSh with "pip install tabulate"')
-	quit()
-try:
-	import requests
-except:
-	print('Install requests using StaSh with "pip install requests"')
-	quit()
-try:
-	from bs4 import BeautifulSoup
-except:
-	print('Install BeautifulSoup using StaSh with "pip install beautifulsoup4"')
 	quit()
 
 if os.path.isfile('current_versions.ini') == False:
@@ -215,7 +208,7 @@ if (current != ''):
 	if ((current == version) or (version == 'Error')):
 		table.append([\'''' + displayname + '''\', current, version, ''])
 	else:
-		table.append([\'''' + displayname + '''\', current, version, 'Update available!'])
+		table.append([\'''' + displayname + '''\', current, version, '¿' + \'''' + fieldname + '''\' + '¿'])
 	used_tools_counter += 1
 ''', '<string>', 'exec')
 	exec(code, globals(), globals())
@@ -362,6 +355,8 @@ def run_cli():
 	gather_used_tools('xamn')
 	gather_used_tools('xways')
 	
+	console.show_activity()
+	
 	response = list(crawl())
 	
 	update_cli('aim', 'AIM', aim_parser)
@@ -426,7 +421,82 @@ def run_cli():
 	update_cli('xamn', 'XAMN', xamn_parser)
 	update_cli('xways', 'X-Ways', xways_parser)
 	
-	print(tabulate(table, headers = table_headers, disable_numparse = True))
+	update_urls = {
+'xways' : 'http://www.x-ways.net/winhex/license.html',
+'xamn' : 'https://www.msab.com/downloads/',
+'veracrypt' : 'https://www.veracrypt.fr/en/Downloads.html',
+'usbdetective' : 'https://usbdetective.com/release-notes/',
+'ufed4pc' : 'https://www.cellebrite.com/en/support/product-releases/',
+'tzworks' : 'https://tzworks.net/download_links.php',
+'sleuthkit' : 'https://github.com/sleuthkit/sleuthkit/releases/latest',
+'physicalanalyzer' : 'https://www.cellebrite.com/en/support/product-releases/',
+'passware' : 'https://www.passware.com/kit-forensic/whatsnew/',
+'paraben' : 'https://paraben.com/paraben-downloads/',
+'oxygen' : 'http://www.oxygen-forensic.com/download/whatsnew/OFD/WhatsNew.html',
+'osf' : 'https://www.osforensics.com/download.html',
+'nsrl' : 'https://www.nist.gov/itl/ssd/software-quality-group/national-software-reference-library-nsrl/nsrl-download/current-rds',
+'nirsoft' : 'https://launcher.nirsoft.net/downloads/index.html',
+'netanalysis' : 'https://www.digital-detective.net/start/netanalysis-quick-start/',
+'mountimagepro' : 'http://www.forensicexplorer.com/download.php',
+'mobiledit' : 'https://www.mobiledit.com/downloads',
+'macquisition' : 'https://www.blackbagtech.com/downloads/',
+'lime' : 'https://github.com/504ensicsLabs/LiME/releases/latest',
+'kape' : 'https://ericzimmerman.github.io/KapeDocs/#!Pages\\0.-Changelog.md',
+'kali' : 'https://www.kali.org/downloads/',
+'ive' : 'https://berla.co/customer-support/',
+'irec' : 'https://binalyze.com/products/irec/release-notes/',
+'hstex' : 'https://www.digital-detective.net/start/hstex-quick-start/',
+'hashcat' : 'https://hashcat.net/beta/',
+'ftkimager' : 'https://accessdata.com/product-download',
+'ftk' : 'https://accessdata.com/product-download',
+'fresponse' : 'https://www.f-response.com/support/downloads',
+'ffn' : 'https://www.logicube.com/knowledge/forensic-falcon-neo/',
+'forensicexplorer' : 'http://www.forensicexplorer.com/download.php',
+'fec' : 'http://www.metaspike.com/fec-change-log/',
+'ez_wxtcmd' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_vscmount' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_timelineex' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_shellbagex' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_sdbex' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_registryex' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_recentfilecacheparser' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_rbcmd' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_pecmd' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_mftexplorer' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_mftecmd' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_lecmd' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_jumplistex' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_jlecmd' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_evtxex' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_bstrings' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_appcompatcacheparser' : 'https://ericzimmerman.github.io/#!index.md',
+'ez_amcacheparser' : 'https://ericzimmerman.github.io/#!index.md',
+'exiftool' : 'https://owl.phy.queensu.ca/~phil/exiftool/',
+'encase' : 'https://www.guidancesoftware.com/encase-forensic',
+'eift' : 'https://www.elcomsoft.com/eift.html',
+'deft' : 'http://na.mirror.garr.it/mirrors/deft/zero/',
+'cyberchef' : 'https://github.com/gchq/CyberChef/releases/latest',
+'caine' : 'https://www.caine-live.net/',
+'blacklight' : 'https://www.blackbagtech.com/downloads/',
+'bec' : 'https://belkasoft.com/get',
+'axiom' : 'https://www.magnetforensics.com/downloadaxiom/',
+'avml' : 'https://github.com/microsoft/avml/releases/latest',
+'autopsy' : 'https://github.com/sleuthkit/autopsy/releases/latest',
+'atola' : 'https://atola.com/products/taskforce/download.html',
+'aim' : 'https://arsenalrecon.com/downloads/'
+}
+	
+	results = tabulate(table, headers = table_headers, disable_numparse = True)
+	results_split = results.split('¿')
+	
+	for idx, result in enumerate(results_split):
+		if (idx % 2 == 0):
+			print(result, end = '')
+		else:
+			for key in update_urls.keys():
+				if key == result:
+					result = result.replace(key, update_urls[key])
+			console.write_link('Update available!', result)
 	
 	### Forensic Version Checker
 	try:
@@ -434,12 +504,13 @@ def run_cli():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version = '1.14'
-	if (version == '1.14'):
+		version = '1.15'
+	if (version == '1.15'):
 		pass
 	else:
-		print('')
-		print('FVC update available!')
+		print('\n')
+		console.write_link('FVC update available!', 'https://github.com/jankais3r/Forensic-Version-Checker/releases/latest')
 
 table = []
 run_cli()
+console.hide_activity()
