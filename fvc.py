@@ -85,6 +85,7 @@ hstex =
 irec = 
 ive = 
 kali = 
+kape = 
 lime = 
 macquisition = 
 mobiledit = 
@@ -196,6 +197,7 @@ hstex_parser = (parsers['PARSERS']['hstex_parser']).replace('\\t', '\t')
 irec_parser = (parsers['PARSERS']['irec_parser']).replace('\\t', '\t')
 ive_parser = (parsers['PARSERS']['ive_parser']).replace('\\t', '\t')
 kali_parser = (parsers['PARSERS']['kali_parser']).replace('\\t', '\t')
+kape_parser = (parsers['PARSERS']['kape_parser']).replace('\\t', '\t')
 lime_parser = (parsers['PARSERS']['lime_parser']).replace('\\t', '\t')
 macquisition_parser = (parsers['PARSERS']['macquisition_parser']).replace('\\t', '\t')
 mobiledit_parser = (parsers['PARSERS']['mobiledit_parser']).replace('\\t', '\t')
@@ -353,6 +355,7 @@ def crawl():
 				'irec'						:	parsers['URLS']['irec'],
 				'ive'						:	parsers['URLS']['ive'],
 				'kali'						:	parsers['URLS']['kali'],
+				'kape'						:	parsers['URLS']['kape'],
 				'lime'						:	parsers['URLS']['lime'],
 				'macquisition'				:	parsers['URLS']['macquisition'],
 				'mobiledit'					:	parsers['URLS']['mobiledit'],
@@ -453,6 +456,7 @@ def refresh_gui():
 	update_gui('irec', irec_parser)
 	update_gui('ive', ive_parser)
 	update_gui('kali', kali_parser)
+	update_gui('kape', kape_parser)
 	update_gui('lime', lime_parser)
 	update_gui('macquisition', macquisition_parser)
 	update_gui('mobiledit', mobiledit_parser)
@@ -536,6 +540,7 @@ def run_cli():
 	gather_used_tools('irec')
 	gather_used_tools('ive')
 	gather_used_tools('kali')
+	gather_used_tools('kape')
 	gather_used_tools('lime')
 	gather_used_tools('macquisition')
 	gather_used_tools('mobiledit')
@@ -612,6 +617,7 @@ def run_cli():
 	update_cli('irec', 'IREC', irec_parser)
 	update_cli('ive', 'iVe', ive_parser)
 	update_cli('kali', 'Kali', kali_parser)
+	update_cli('kape', 'KAPE', kape_parser)
 	update_cli('lime', 'LiME', lime_parser)
 	update_cli('macquisition', 'MacQuisition', macquisition_parser)
 	update_cli('mobiledit', 'MobilEdit', mobiledit_parser)
@@ -797,6 +803,7 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	build_gui('irec', 'IREC', 'https://binalyze.com/products/irec/release-notes/')
 	build_gui('ive', 'iVe', 'https://berla.co/customer-support/')
 	build_gui('kali', 'Kali', 'https://www.kali.org/downloads/')
+	build_gui('kape', 'KAPE', 'https://ericzimmerman.github.io/KapeDocs/#!Pages\\0.-Changelog.md')
 	build_gui('lime', 'LiME', 'https://github.com/504ensicsLabs/LiME/releases/latest')
 	build_gui('macquisition', 'MacQuisition', 'https://www.blackbagtech.com/downloads/')
 	build_gui('mobiledit', 'MobilEdit', 'https://www.mobiledit.com/downloads')
