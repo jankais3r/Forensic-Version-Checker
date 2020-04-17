@@ -483,8 +483,8 @@ def refresh_gui():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version = '1.14'
-	if version != '1.14':
+		version = '1.15'
+	if version != '1.15':
 		about.configure(text = 'Update FVC', fg = 'blue', cursor = 'hand2')
 		about.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new('https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'))
 	
@@ -646,8 +646,8 @@ def run_cli():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version = '1.14'
-	if (version == '1.14'):
+		version = '1.15'
+	if (version == '1.15'):
 		pass
 	else:
 		print('')
@@ -669,7 +669,7 @@ config['CURRENT'][\'''' + tool + '''\'] = ''' + tool + '''_current.get()
 	gui_toggle.configure(state = 'normal')
 
 def about_box():
-	messagebox.showinfo('About', 'Forensic Version Checker v1.14\n\n\
+	messagebox.showinfo('About', 'Forensic Version Checker v1.15\n\n\
 Latest parsers.ini update on: ' + parsers_date + '\n\
 Latest changes: ' + parsers_changes + '\n\
 Previous changes: ' + parsers_previous_changes + '\n\n\
