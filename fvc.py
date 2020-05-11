@@ -44,6 +44,7 @@ if os.path.isfile('current_versions.ini') == False:
 	default_config = '''[CURRENT]
 gui = Display all
 aim = 
+aleapp = 
 atola = 
 autopsy = 
 avml = 
@@ -82,6 +83,7 @@ ftk =
 ftkimager = 
 hashcat = 
 hstex = 
+ileapp = 
 irec = 
 ive = 
 kali = 
@@ -156,6 +158,7 @@ parsers = configparser.ConfigParser()
 parsers.read('parsers.ini')
 
 aim_parser = (parsers['PARSERS']['aim_parser']).replace('\\t', '\t')
+aleapp_parser = (parsers['PARSERS']['aleapp_parser']).replace('\\t', '\t')
 atola_parser = (parsers['PARSERS']['atola_parser']).replace('\\t', '\t')
 autopsy_parser = (parsers['PARSERS']['autopsy_parser']).replace('\\t', '\t')
 avml_parser = (parsers['PARSERS']['avml_parser']).replace('\\t', '\t')
@@ -194,6 +197,7 @@ ftk_parser = (parsers['PARSERS']['ftk_parser']).replace('\\t', '\t')
 ftkimager_parser = (parsers['PARSERS']['ftkimager_parser']).replace('\\t', '\t')
 hashcat_parser = (parsers['PARSERS']['hashcat_parser']).replace('\\t', '\t')
 hstex_parser = (parsers['PARSERS']['hstex_parser']).replace('\\t', '\t')
+ileapp_parser = (parsers['PARSERS']['ileapp_parser']).replace('\\t', '\t')
 irec_parser = (parsers['PARSERS']['irec_parser']).replace('\\t', '\t')
 ive_parser = (parsers['PARSERS']['ive_parser']).replace('\\t', '\t')
 kali_parser = (parsers['PARSERS']['kali_parser']).replace('\\t', '\t')
@@ -314,6 +318,7 @@ def crawl():
 	
 	all_urls = {'fvc'						:	parsers['URLS']['fvc'],
 				'aim'						:	parsers['URLS']['aim'],
+				'aleapp'					:	parsers['URLS']['aleapp'],
 				'atola'						:	parsers['URLS']['atola'],
 				'autopsy'					:	parsers['URLS']['autopsy'],
 				'avml'						:	parsers['URLS']['avml'],
@@ -352,6 +357,7 @@ def crawl():
 				'ftkimager'					:	parsers['URLS']['ftkimager'],
 				'hashcat'					:	parsers['URLS']['hashcat'],
 				'hstex'						:	parsers['URLS']['hstex'],
+				'ileapp'					:	parsers['URLS']['ileapp'],
 				'irec'						:	parsers['URLS']['irec'],
 				'ive'						:	parsers['URLS']['ive'],
 				'kali'						:	parsers['URLS']['kali'],
@@ -414,7 +420,8 @@ def refresh_gui():
 	
 	response = mt_queue.get()
 	
-	update_gui('aim', aim_parser)	
+	update_gui('aim', aim_parser)
+	update_gui('aleapp', aleapp_parser)
 	update_gui('atola', atola_parser)
 	update_gui('autopsy', autopsy_parser)
 	update_gui('avml', avml_parser)
@@ -453,6 +460,7 @@ def refresh_gui():
 	update_gui('ftkimager', ftkimager_parser)
 	update_gui('hashcat', hashcat_parser)
 	update_gui('hstex', hstex_parser)
+	update_gui('ileapp', ileapp_parser)
 	update_gui('irec', irec_parser)
 	update_gui('ive', ive_parser)
 	update_gui('kali', kali_parser)
@@ -483,8 +491,8 @@ def refresh_gui():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version = '1.15'
-	if version != '1.15':
+		version = '1.16'
+	if version != '1.16':
 		about.configure(text = 'Update FVC', fg = 'blue', cursor = 'hand2')
 		about.bind('<ButtonRelease-1>', lambda e:webbrowser.open_new('https://github.com/jankais3r/Forensic-Version-Checker/releases/latest'))
 	
@@ -499,6 +507,7 @@ def run_cli():
 	table_headers = ['Tool', 'Current Version', 'Latest Version', 'Update?']
 	
 	gather_used_tools('aim')
+	gather_used_tools('aleapp')
 	gather_used_tools('atola')
 	gather_used_tools('autopsy')
 	gather_used_tools('avml')
@@ -537,6 +546,7 @@ def run_cli():
 	gather_used_tools('ftkimager')
 	gather_used_tools('hashcat')
 	gather_used_tools('hstex')
+	gather_used_tools('ileapp')
 	gather_used_tools('irec')
 	gather_used_tools('ive')
 	gather_used_tools('kali')
@@ -576,6 +586,7 @@ def run_cli():
 	response = mt_queue.get()
 	
 	update_cli('aim', 'AIM', aim_parser)
+	update_cli('aleapp', 'ALEAPP', aleapp_parser)
 	update_cli('atola', 'Atola TaskForce', atola_parser)
 	update_cli('autopsy', 'Autopsy', autopsy_parser)
 	update_cli('avml', 'AVML', avml_parser)
@@ -614,6 +625,7 @@ def run_cli():
 	update_cli('ftkimager', 'FTK Imager', ftkimager_parser)
 	update_cli('hashcat', 'hashcat', hashcat_parser)
 	update_cli('hstex', 'HstEx', hstex_parser)
+	update_cli('ileapp', 'iLEAPP', ileapp_parser)
 	update_cli('irec', 'IREC', irec_parser)
 	update_cli('ive', 'iVe', ive_parser)
 	update_cli('kali', 'Kali', kali_parser)
@@ -646,8 +658,8 @@ def run_cli():
 		version = soup.find('div', {'class': 'release-header'}).select_one('a').text.strip()
 		version = version.replace('v', '')
 	except:
-		version = '1.15'
-	if (version == '1.15'):
+		version = '1.16'
+	if (version == '1.16'):
 		pass
 	else:
 		print('')
@@ -669,7 +681,7 @@ config['CURRENT'][\'''' + tool + '''\'] = ''' + tool + '''_current.get()
 	gui_toggle.configure(state = 'normal')
 
 def about_box():
-	messagebox.showinfo('About', 'Forensic Version Checker v1.15\n\n\
+	messagebox.showinfo('About', 'Forensic Version Checker v1.16\n\n\
 Latest parsers.ini update on: ' + parsers_date + '\n\
 Latest changes: ' + parsers_changes + '\n\
 Previous changes: ' + parsers_previous_changes + '\n\n\
@@ -762,6 +774,7 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	widget_order = []
 	
 	build_gui('aim', 'AIM', 'https://arsenalrecon.com/downloads/')
+	build_gui('aleapp', 'ALEAPP', 'https://github.com/abrignoni/ALEAPP')
 	build_gui('atola', 'Atola TaskForce', 'https://atola.com/products/taskforce/download.html')
 	build_gui('autopsy', 'Autopsy', 'https://github.com/sleuthkit/autopsy/releases/latest')
 	build_gui('avml', 'AVML', 'https://github.com/microsoft/avml/releases/latest')
@@ -800,6 +813,7 @@ EREREREREREREREREREREREREREREVE/9T95hAEFoC4rDwAAAABJRU5ErkJggg==' # https://then
 	build_gui('ftkimager', 'FTK Imager', 'https://accessdata.com/product-download')
 	build_gui('hashcat', 'hashcat', 'https://hashcat.net/beta/')
 	build_gui('hstex', 'HstEx', 'https://www.digital-detective.net/start/hstex-quick-start/')
+	build_gui('ileapp', 'iLEAPP', 'https://github.com/abrignoni/iLEAPP')
 	build_gui('irec', 'IREC', 'https://binalyze.com/products/irec/release-notes/')
 	build_gui('ive', 'iVe', 'https://berla.co/customer-support/')
 	build_gui('kali', 'Kali', 'https://www.kali.org/downloads/')
