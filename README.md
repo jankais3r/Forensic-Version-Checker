@@ -7,6 +7,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 ![CLI interface](https://github.com/jankais3r/Forensic-Version-Checker/blob/master/cli.png)
 
 ## Supported tools
+- ALEAPP
 - Arsenal Image Mounter
 - Atola TaskForce
 - Autopsy
@@ -29,6 +30,7 @@ Script that checks for available updates for the most commonly used Digital Fore
 - FTK Imager
 - hashcat
 - HstEx
+- iLEAPP
 - IREC
 - iVe
 - Kali
